@@ -1,0 +1,23 @@
+
+spring:
+  datasource:
+    #    maria:
+    jdbc-url: jdbc:mariadb://mariadb.c90os66gcajk.ap-northeast-2.rds.amazonaws.com:3306/WoIMariaDB
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+    password: WoI1234!!
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        temp:
+        use_jdbc_metadata_defaults: false
+    generate-ddl: true
+  security:
+    header: Authorization
+    secret: WoIWoISecretKeySecretKeyWoISecretKey
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
