@@ -1,4 +1,16 @@
 package com.nutritionangel.woi.service;
 
-public class UserService {
+import com.nutritionangel.woi.dto.user.UserLoginDTO;
+import com.nutritionangel.woi.dto.user.UserRegisterDTO;
+import com.nutritionangel.woi.entity.UserEntity;
+import com.nutritionangel.woi.projection.user.GetUser;
+
+public interface UserService {
+
+    GetUser register(UserRegisterDTO userRegisterDTO);
+
+    GetUser login(UserLoginDTO userLoginDTO);
+
 }
+
+
