@@ -36,6 +36,9 @@ public class UserServiceImpl implements UserService{
 
     private GetUser EntityToProjectionUser(UserEntity user){
         GetUser userInfo = new GetUser() {
+
+            @Override
+            public Integer getUserId() { return user.getUserId();}
             @Override
             public String getLoginId() {
                 return user.getLoginId();
@@ -78,6 +81,14 @@ public class UserServiceImpl implements UserService{
 
         GetUser user = EntityToProjectionUser(findUser.get());
         return user;
+    }
+
+    @Override
+    public void logout(String loginId) {
+        Optional<UserEntity> optionalUser = userRepository.findByLoginId(loginId);
+        optionalUser.ifPresent(user -> {
+            userRepository.delete(user);
+        });
     }
 
 }

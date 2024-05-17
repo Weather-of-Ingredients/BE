@@ -11,6 +11,8 @@ public interface UserService {
 
     GetUser login(UserLoginDTO userLoginDTO);
 
+    void logout(String loginId);
+
 }
 
 
