@@ -1,7 +1,6 @@
 package com.nutritionangel.woi.controller;
 
 import com.nutritionangel.woi.dto.diet.DietDTO;
-import com.nutritionangel.woi.dto.diet.MenuDTO;
 import com.nutritionangel.woi.service.DietService;
 import com.nutritionangel.woi.service.S3UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,56 +20,24 @@ import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api")
-public class DietController {
+public class MenuController {
 
-    @Value("${openApi.serviceKey}")
+    @Value("${openApi.serviceKey3}")
     private String serviceKey;
 
-    @Value("${openApi.callBackUrl}")
+    @Value("${openApi.callBackUrl2}")
     private String callBackUrl;
 
-    @Value("${openApi.dataType}")
-    private String service_Type;
-
-    private final DietService dietService;
-    private final S3UploadService s3UploadService;
-
-    @Autowired
-    public DietController(DietService dietService, S3UploadService s3UploadService) {
-        this.dietService = dietService;
-        this.s3UploadService = s3UploadService;
-    }
-
-    @PostMapping("/upload") // 테스트 코드
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        try {
-            String fileUrl = s3UploadService.saveFile(file);
-            return ResponseEntity.ok(fileUrl);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @PostMapping("/diet/add")
-    public ResponseEntity<?> addDiet(DietDTO dietDTO) {
-        DietDTO createdDiet = dietService.createDiet(dietDTO);
-        return ResponseEntity.ok(createdDiet);
-    }
-
-    @GetMapping("/getFood/{food_Name}")
+    @GetMapping("/getNut/{food_Name}")
     public String callApi(
             @PathVariable(value = "food_Name") String food_Name
-//            @PathVariable(value="ckry_Name") String ckry_Name
     ) throws IOException {
         StringBuilder result = new StringBuilder();
         String food_name = URLEncoder.encode(food_Name, StandardCharsets.UTF_8);
         String urlStr = callBackUrl +
-                "serviceKey=" + serviceKey +
-                "&service_Type=" + service_Type +
-                "&Page_No=1" +
-                "&Page_Size=20" +
-                "&food_Name=" + food_name;
+                serviceKey +
+                "/I2790/json/1/5" +
+                "/DESC_KOR=" + food_name;
         URL url = new URL(urlStr);
 
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
