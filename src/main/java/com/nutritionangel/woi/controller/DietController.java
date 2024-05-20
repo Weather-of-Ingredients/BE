@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api")
@@ -32,6 +34,8 @@ public class DietController {
 
     private final DietService dietService;
     private final S3UploadService s3UploadService;
+
+//    private
 
     @Autowired
     public DietController(DietService dietService, S3UploadService s3UploadService) { this.dietService = dietService;
@@ -55,20 +59,24 @@ public class DietController {
         return ResponseEntity.ok(createdDiet);
     }
 
-    @GetMapping("/get")
+    @GetMapping("/getFood/{food_Name}")
     public String callApi(
-            @RequestParam(value="food_Name") String food_Name,
-            @RequestParam(value="ckry_Name") String ckry_Name
+//            @RequestParam(value="food_Name") String food_Name
+//            @RequestParam(value="ckry_Name") String ckry_Name
+            @PathVariable(value="food_Name") String food_Name
+//            @PathVariable(value="ckry_Name") String ckry_Name
     ) throws IOException {
         StringBuilder result = new StringBuilder();
+        String food_name = URLEncoder.encode(food_Name, StandardCharsets.UTF_8);
         String urlStr = callBackUrl +
                 "serviceKey=" + serviceKey +
                 "&service_Type=" + service_Type +
                 "&Page_No=1" +
                 "&Page_Size=20" +
-                "&food_Name=" + food_Name +
-                "&ckry_Name=" + ckry_Name;
+                "&food_Name=" + food_name;
+//                "&ckry_Name=" + ckry_Name;
         URL url = new URL(urlStr);
+//        String jsonString = restTemplate.getForObject(url, String.class);
 
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
