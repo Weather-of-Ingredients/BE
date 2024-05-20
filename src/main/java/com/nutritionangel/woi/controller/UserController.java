@@ -10,10 +10,7 @@ import com.nutritionangel.woi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @Controller
@@ -39,5 +36,14 @@ public class UserController {
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_LOGIN.getStatus().value())
                 .body(new ResponseDTO(ResponseCode.SUCCESS_LOGIN, res));
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<ResponseDTO> logout(@RequestParam("loginId") String loginId) {
+        userService.logout(loginId);
+
+        return ResponseEntity
+                .status(ResponseCode.SUCCESS_LOGOUT.getStatus().value())
+                .body(new ResponseDTO(ResponseCode.SUCCESS_LOGOUT, null));
     }
 }
