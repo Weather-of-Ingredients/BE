@@ -6,6 +6,12 @@
 .gradle/
 build/
 
+### application ###
+application.properties
+
+## AWS S3 Bucket 엑세스 키가 있어 제외합니다. ##
+application-s3.properties
+
 # Local configuration file (sdk path, etc)
 local.properties
 
