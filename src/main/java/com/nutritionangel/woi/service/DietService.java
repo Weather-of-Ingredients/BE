@@ -3,6 +3,7 @@ package com.nutritionangel.woi.service;
 import com.nutritionangel.woi.dto.diet.DietDTO;
 import com.nutritionangel.woi.entity.DietEntity;
 import com.nutritionangel.woi.enums.DietType;
+import com.nutritionangel.woi.enums.Weeks;
 import com.nutritionangel.woi.repository.DietRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class DietService {
 
     private DietEntity mapToEntity(DietDTO dietDTO) {
         return DietEntity.builder()
-                .week(dietDTO.getWeek())
+                .week(Weeks.valueOf(dietDTO.getWeek()))
                 .date(LocalDateTime.now())
                 .type(DietType.valueOf(dietDTO.getType()))
                 .build();
@@ -35,7 +36,7 @@ public class DietService {
     private DietDTO mapToDTO(DietEntity dietEntity) {
         return DietDTO.builder()
                 .dietId(dietEntity.getDietId())
-                .week(dietEntity.getWeek())
+                .week(dietEntity.getWeek().name())
                 .date(dietEntity.getDate().toString())
                 .type(dietEntity.getType().name())
                 .build();

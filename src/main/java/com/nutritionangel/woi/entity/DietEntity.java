@@ -1,6 +1,7 @@
 package com.nutritionangel.woi.entity;
 
 import com.nutritionangel.woi.enums.DietType;
+import com.nutritionangel.woi.enums.Weeks;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,8 +31,8 @@ public class DietEntity {
     @Enumerated(EnumType.STRING)
     private DietType type;
 
-    @Column(nullable = false)
-    private String week;
+    @Enumerated(EnumType.STRING)
+    private Weeks week;
 
     @OneToMany(mappedBy = "diet")
     private List<MenuEntity> menus;
