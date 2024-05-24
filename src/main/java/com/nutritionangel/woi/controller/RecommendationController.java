@@ -47,8 +47,10 @@ public class RecommendationController {
         this.recommendationService = recommendationService;
     }
 
+    //year 과 month 에 해당하는 good, bad, alt crop 보여주는 url
     @GetMapping("/{year}/{month}")
     public CropResponseDTO getRecommendationDTO(@PathVariable("year") int year, @PathVariable("month") int month){
+
         RecommendationDTO recommendationDTO = recommendationService.getRecommendationDTOService(year, month);
         if(recommendationDTO == null){
             return new CropResponseDTO(false, null);
@@ -56,6 +58,7 @@ public class RecommendationController {
         return new CropResponseDTO(true, recommendationDTO);
     }
 
+    //1부터 20까지의 작물을 보여주는 url
     @GetMapping("")
     public List<CropItem> callApi() throws IOException {
 
@@ -83,6 +86,18 @@ public class RecommendationController {
         return cropItems.getCropItems();
     }
 
+    /*input year, month, crop type 들어오면
+    * db에 저장하는 url
+    * */
+    @PostMapping("/add/{crop_type}")
+    private CropResponseDTO addCrops(@PathVariable("crop_type") String crop_type, @RequestBody RecommendationDTO recommendationDTO){
+
+        RecommendationDTO createRecommendationDTO = recommendationService.createRecommendationDTOService(crop_type, recommendationDTO);
+        if(recommendationDTO == null){
+            return new CropResponseDTO(false, null);
+        }
+        return new CropResponseDTO(true, createRecommendationDTO);
+    }
     private InputStream getNetworkConnection(HttpURLConnection urlConnection) throws IOException{
         urlConnection.setConnectTimeout(3000); //연결타임아웃 시간
         urlConnection.setReadTimeout(3000);//읽기 타임아웃 시간
