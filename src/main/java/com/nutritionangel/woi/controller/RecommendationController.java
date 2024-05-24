@@ -58,6 +58,15 @@ public class RecommendationController {
         return new CropResponseDTO(true, recommendationDTO);
     }
 
+    @GetMapping("/{year}/{month}/{bad_crops}")
+    public CropResponseDTO badCrops(@PathVariable("year") int year, @PathVariable("month") int month, @PathVariable("bad_crops") String bad_crop){
+        List<CropItem> cropItems = recommendationService.badCropService(year, month, bad_crop);
+        if(cropItems == null){
+            return new CropResponseDTO(false, null);
+        }
+        return new CropResponseDTO(true, cropItems);
+    }
+
     //1부터 20까지의 작물을 보여주는 url
     @GetMapping("")
     public List<CropItem> callApi() throws IOException {
@@ -98,6 +107,7 @@ public class RecommendationController {
         }
         return new CropResponseDTO(true, createRecommendationDTO);
     }
+
     private InputStream getNetworkConnection(HttpURLConnection urlConnection) throws IOException{
         urlConnection.setConnectTimeout(3000); //연결타임아웃 시간
         urlConnection.setReadTimeout(3000);//읽기 타임아웃 시간

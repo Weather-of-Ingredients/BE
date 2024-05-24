@@ -122,4 +122,14 @@ public class RecommendationService {
                 .month(recommendationDTO.getMonth())
                 .build();
     }
+
+    public List<CropItem> badCropService(int year, int month, String bad_crop) {
+        Optional<RecommendationEntity> recommendationEntity = getRecommendation(year, month);
+        if(recommendationEntity.isPresent()){
+            RecommendationEntity recommendation = recommendationEntity.get();
+            return recommendation.getBad_crop();
+        }else{
+            return null;
+        }
+    }
 }
