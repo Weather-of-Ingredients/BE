@@ -19,10 +19,14 @@ public class DietService {
     public DietService(DietRepository dietRepository) { this.dietRepository = dietRepository; }
 
     // Diet 생성 후 저장
-    public DietDTO createDiet(DietDTO dietDTO) {
-        DietEntity dietEntity = mapToEntity(dietDTO);
-        DietEntity savedEntity = dietRepository.save(dietEntity);
-        return mapToDTO(savedEntity);
+    public DietEntity createDiet(DietDTO dietDTO) {
+        DietEntity dietEntity = DietEntity.builder()
+                .type(DietType.valueOf(dietDTO.getType()))
+                .week(Weeks.valueOf(dietDTO.getWeek()))
+                .date(LocalDateTime.now())
+                .build();
+
+        return dietRepository.save(dietEntity);
     }
 
     private DietEntity mapToEntity(DietDTO dietDTO) {

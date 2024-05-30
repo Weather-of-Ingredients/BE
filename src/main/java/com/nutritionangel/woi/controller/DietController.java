@@ -2,6 +2,7 @@ package com.nutritionangel.woi.controller;
 
 import com.nutritionangel.woi.dto.diet.DietDTO;
 import com.nutritionangel.woi.dto.diet.MenuDTO;
+import com.nutritionangel.woi.entity.DietEntity;
 import com.nutritionangel.woi.service.DietService;
 import com.nutritionangel.woi.service.S3UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +54,9 @@ public class DietController {
     }
 
     @PostMapping("/diet/add")
-    public ResponseEntity<?> addDiet(DietDTO dietDTO) {
-        DietDTO createdDiet = dietService.createDiet(dietDTO);
-        return ResponseEntity.ok(createdDiet);
+    public ResponseEntity<DietEntity> createDiet(@RequestBody DietDTO dietDTO) {
+        DietEntity dietEntity = dietService.createDiet(dietDTO);
+        return ResponseEntity.ok(dietEntity);
     }
 
     @GetMapping("/getFood/{food_Name}")
