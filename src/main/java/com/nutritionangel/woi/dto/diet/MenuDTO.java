@@ -13,4 +13,8 @@ public class MenuDTO {
     private String fat;
     private String food_name;
     private String calories;
+
+    public String getFoodName() {
+        return food_name;
+    }
 }

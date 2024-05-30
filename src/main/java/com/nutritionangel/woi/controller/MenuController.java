@@ -2,6 +2,7 @@ package com.nutritionangel.woi.controller;
 
 import com.nutritionangel.woi.dto.diet.DietDTO;
 import com.nutritionangel.woi.service.DietService;
+import com.nutritionangel.woi.service.MenuService;
 import com.nutritionangel.woi.service.S3UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,14 @@ public class MenuController {
 
     @Value("${openApi.callBackUrl2}")
     private String callBackUrl;
+
+    @Autowired
+    private MenuService menuService;
+
+    @PostMapping("/menu/save")
+    public void fetchAndSaveMenus(@RequestParam int dietId) {
+        menuService.fetchAndSaveMenu(dietId);
+    }
 
     @GetMapping("/getNut/{food_Name}")
     public String callApi(
