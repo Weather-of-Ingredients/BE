@@ -91,4 +91,16 @@ public class DietController {
         return result.toString();
     }
 
+    @PutMapping("/diet/{dietId}")
+    public ResponseEntity<DietEntity> updateDiet(@PathVariable int dietId, @RequestBody DietDTO dietDTO) {
+        DietEntity updatedDiet = dietService.updateDiet(dietId, dietDTO);
+        return ResponseEntity.ok(updatedDiet);
+    }
+
+    @DeleteMapping("/diet/{dietId}")
+    public ResponseEntity<Void> deleteDiet(@PathVariable int dietId) {
+        dietService.deleteDiet(dietId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

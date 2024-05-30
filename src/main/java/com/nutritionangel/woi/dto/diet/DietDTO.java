@@ -2,6 +2,8 @@ package com.nutritionangel.woi.dto.diet;
 
 import lombok.*;
 
+import java.util.List;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,4 +13,5 @@ public class DietDTO {
     private String date;
     private String type;
     private String week;
+    private List<MenuDTO> menus;
 }
