@@ -30,6 +30,16 @@ public class MenuService {
     @Value("${openApi.callBackUrl2}")
     private String callBackUrl;
 
+    @Autowired
+    public MenuService(MenuRepository menuRepository) {
+        this.menuRepository = menuRepository;
+    }
+
+    public MenuEntity getMenuById(int menuId) {
+        return menuRepository.findById(menuId)
+                .orElseThrow(() -> new RuntimeException("Menu not found"));
+    }
+
     public void fetchAndSaveMenu(int dietId) {
         // API URL 정의
         String urlStr = callBackUrl +

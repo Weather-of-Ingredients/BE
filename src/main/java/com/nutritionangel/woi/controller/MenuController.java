@@ -1,6 +1,7 @@
 package com.nutritionangel.woi.controller;
 
 import com.nutritionangel.woi.dto.diet.DietDTO;
+import com.nutritionangel.woi.entity.MenuEntity;
 import com.nutritionangel.woi.service.DietService;
 import com.nutritionangel.woi.service.MenuService;
 import com.nutritionangel.woi.service.S3UploadService;
@@ -31,6 +32,17 @@ public class MenuController {
 
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    public MenuController(MenuService menuService) {
+        this.menuService = menuService;
+    }
+
+    @GetMapping("/menu/{menuId}")
+    public ResponseEntity<MenuEntity> getMenuById(@PathVariable int menuId) {
+        MenuEntity menuEntity = menuService.getMenuById(menuId);
+        return ResponseEntity.ok(menuEntity);
+    }
 
     @PostMapping("/menu/save")
     public void fetchAndSaveMenus(@RequestParam int dietId) {

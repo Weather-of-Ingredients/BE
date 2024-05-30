@@ -59,6 +59,18 @@ public class DietController {
         return ResponseEntity.ok(dietEntity);
     }
 
+    @PutMapping("/diet/{dietId}")
+    public ResponseEntity<DietEntity> updateDiet(@PathVariable int dietId, @RequestBody DietDTO dietDTO) {
+        DietEntity updatedDiet = dietService.updateDiet(dietId, dietDTO);
+        return ResponseEntity.ok(updatedDiet);
+    }
+
+    @DeleteMapping("/diet/{dietId}")
+    public ResponseEntity<Void> deleteDiet(@PathVariable int dietId) {
+        dietService.deleteDiet(dietId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/getFood/{food_Name}")
     public String callApi(
             @PathVariable(value = "food_Name") String food_Name
@@ -89,18 +101,6 @@ public class DietController {
         urlConnection.disconnect();
 
         return result.toString();
-    }
-
-    @PutMapping("/diet/{dietId}")
-    public ResponseEntity<DietEntity> updateDiet(@PathVariable int dietId, @RequestBody DietDTO dietDTO) {
-        DietEntity updatedDiet = dietService.updateDiet(dietId, dietDTO);
-        return ResponseEntity.ok(updatedDiet);
-    }
-
-    @DeleteMapping("/diet/{dietId}")
-    public ResponseEntity<Void> deleteDiet(@PathVariable int dietId) {
-        dietService.deleteDiet(dietId);
-        return ResponseEntity.noContent().build();
     }
 
 }
