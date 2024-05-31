@@ -47,7 +47,9 @@ public class RecommendationController {
         this.recommendationService = recommendationService;
     }
 
-    //year 과 month 에 해당하는 good, bad, alt crop 보여주는 url
+    /*year 과 month 에 해당하는 good, bad, alt crop 보여주는 url
+    * (홈화면 - 배너)
+    * */
     @GetMapping("/{year}/{month}")
     public CropResponseDTO getRecommendationDTO(@PathVariable("year") int year, @PathVariable("month") int month){
 
@@ -58,6 +60,10 @@ public class RecommendationController {
         return new CropResponseDTO(true, recommendationDTO);
     }
 
+    /*
+    * 어려운 작물 가져오기
+    * (기후예측 - 어려운 작물 Get)
+    * */
     @GetMapping("/{year}/{month}/{bad_crops}")
     public CropResponseDTO badCrops(@PathVariable("year") int year, @PathVariable("month") int month, @PathVariable("bad_crops") String bad_crop){
         List<CropItem> cropItems = recommendationService.badCropService(year, month, bad_crop);
@@ -67,7 +73,7 @@ public class RecommendationController {
         return new CropResponseDTO(true, cropItems);
     }
 
-    //1부터 20까지의 작물을 보여주는 url
+    //OpenApi 연결
     @GetMapping("")
     public List<CropItem> callApi() throws IOException {
 
@@ -97,6 +103,7 @@ public class RecommendationController {
 
     /*input year, month, crop type 들어오면
     * db에 저장하는 url
+    * (기후예측 - post)
     * */
     @PostMapping("/add/{crop_type}")
     private CropResponseDTO addCrops(@PathVariable("crop_type") String crop_type, @RequestBody RecommendationDTO recommendationDTO){
