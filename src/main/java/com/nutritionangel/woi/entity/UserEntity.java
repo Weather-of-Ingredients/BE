@@ -39,4 +39,7 @@ public class UserEntity {
     @Column(length=100, nullable = false)
     private String school;
 
+    private String provider; //google, naver 등
+    private String providerId; //소셜 로그인 user의 고유ID
+
 }

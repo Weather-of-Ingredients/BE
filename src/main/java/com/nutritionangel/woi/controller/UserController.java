@@ -10,7 +10,10 @@ import com.nutritionangel.woi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 
 @Controller
@@ -45,5 +48,16 @@ public class UserController {
         return ResponseEntity
                 .status(ResponseCode.SUCCESS_LOGOUT.getStatus().value())
                 .body(new ResponseDTO(ResponseCode.SUCCESS_LOGOUT, null));
+    }
+
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+
+    @GetMapping("/home")
+    public String home(Model model, Principal principal) {
+        model.addAttribute("name", principal.getName());
+        return "home";
     }
 }
