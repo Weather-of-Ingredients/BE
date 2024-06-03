@@ -1,20 +1,16 @@
 package com.nutritionangel.woi.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.nutritionangel.woi.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
-
-
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
+@Builder
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +35,14 @@ public class UserEntity {
     @Column(length=100, nullable = false)
     private String school;
 
-    private String provider; //google, naver 등
-    private String providerId; //소셜 로그인 user의 고유ID
+    private String provider; // google, naver 등
+    private String providerId; // 소셜 로그인 user의 고유ID
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.USER;
+
+    public void encodePassword(PasswordEncoder passwordEncoder){
+        this.password = passwordEncoder.encode(password);
+    }
 }
