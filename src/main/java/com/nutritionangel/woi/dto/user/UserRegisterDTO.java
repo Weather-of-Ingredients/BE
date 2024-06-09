@@ -1,6 +1,7 @@
 package com.nutritionangel.woi.dto.user;
 
 import com.nutritionangel.woi.entity.UserEntity;
+import com.nutritionangel.woi.enums.OAuthProvider;
 import com.nutritionangel.woi.enums.UserRole;
 import lombok.*;
 
@@ -32,33 +33,13 @@ public class UserRegisterDTO {
 
     private UserRole role;
 
-//    @Builder
-//    public UserEntity toEntity(){
-//        UserRole role = (this.role != null) ? this.role : UserRole.USER;
-//        return UserEntity.builder()
-//                .loginId(loginId)
-//                .password(password)
-//                .name(name)
-//                .email(email)
-//                .phoneNum(phoneNum)
-//                .school(school)
-//                .role(role)
-//                .build();
-//    }
-//@Builder
-//public UserRegisterDTO(String name, String loginId, String password, String checkedPassword, String email, String phoneNum, String school, UserRole role) {
-//    this.name = name;
-//    this.loginId = loginId;
-//    this.password = password;
-//    this.checkedPassword = checkedPassword;
-//    this.email = email;
-//    this.phoneNum = phoneNum;
-//    this.school = school;
-//    this.role = role != null ? role : UserRole.USER; // 기본값을 USER로 설정
-//}
+    private OAuthProvider oAuthProvider;
+
+
 
     public UserEntity toEntity() {
         UserRole role = (this.role != null) ? this.role : UserRole.USER;
+        OAuthProvider oAuthProvider = (this.oAuthProvider != null) ? this.oAuthProvider : OAuthProvider.LOCAL;
         return UserEntity.builder()
                 .loginId(loginId)
                 .password(password)
@@ -67,6 +48,7 @@ public class UserRegisterDTO {
                 .phoneNum(phoneNum)
                 .school(school)
                 .role(role)
+                .oAuthProvider(oAuthProvider)
                 .build();
     }
 

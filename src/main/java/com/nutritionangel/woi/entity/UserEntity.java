@@ -1,9 +1,12 @@
 package com.nutritionangel.woi.entity;
 
+import com.nutritionangel.woi.enums.OAuthProvider;
 import com.nutritionangel.woi.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -15,7 +18,7 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_id")
-    private int userId;
+    private Integer userId;
 
     @Column(unique = true, nullable = false, length = 45)
     private String loginId;
@@ -35,8 +38,10 @@ public class UserEntity {
     @Column(length=100, nullable = false)
     private String school;
 
-    private String provider; // google, naver 등
-    private String providerId; // 소셜 로그인 user의 고유ID
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OAuthProvider oAuthProvider = OAuthProvider.LOCAL;
+    //private String providerId; // 소셜 로그인 user의 고유ID
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -45,4 +50,27 @@ public class UserEntity {
     public void encodePassword(PasswordEncoder passwordEncoder){
         this.password = passwordEncoder.encode(password);
     }
+
+    public Integer getUserId() {
+        return userId;
+//    }
+
+//    @Builder
+//    public UserEntity(String loginId, String password, String name, String email, String phoneNum, String school, UserRole role, OAuthProvider oAuthProvider) {
+//        this.loginId = loginId;
+//        this.password = password;
+//        this.name = name;
+//        this.email = email;
+//        this.phoneNum = phoneNum;
+//        this.school = school;
+//        this.role = role;
+//        this.oAuthProvider = oAuthProvider;
+    }
+
+//    public UserEntity update(String name) {
+//        this.name = name;
+//        return this;
+//    }
+
+
 }
