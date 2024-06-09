@@ -102,14 +102,18 @@
 
 package com.nutritionangel.woi.controller;
 
+import com.nutritionangel.woi.auth.AuthTokens;
+import com.nutritionangel.woi.domain.KakaoLoginParams;
 import com.nutritionangel.woi.dto.user.LoginRequestDTO;
 import com.nutritionangel.woi.dto.user.UserRegisterDTO;
 import com.nutritionangel.woi.entity.UserEntity;
 import com.nutritionangel.woi.jwt.JwtUtil;
+import com.nutritionangel.woi.service.OAuthLoginService;
 import com.nutritionangel.woi.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -120,6 +124,8 @@ import org.springframework.web.bind.annotation.*;
 public class RegistrationController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
+
+    private final OAuthLoginService oAuthLoginService;
 
     @PostMapping("/register")   // 약을 여러 개 얻어올 수 있는 버전
     public String processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) throws Exception {
@@ -148,5 +154,10 @@ public class RegistrationController {
         String jwtToken = jwtUtil.createJwt(user.getLoginId(), user.getRole(), expiredTimeMs);
 
         return jwtToken;
+    }
+
+    @PostMapping("/login/kakao")
+    public ResponseEntity<AuthTokens> loginKakao(@RequestBody KakaoLoginParams params) {
+        return ResponseEntity.ok(oAuthLoginService.login(params));
     }
 }
