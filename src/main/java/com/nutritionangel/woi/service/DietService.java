@@ -1,6 +1,9 @@
 package com.nutritionangel.woi.service;
 
 import com.nutritionangel.woi.dto.diet.DietDTO;
+import com.nutritionangel.woi.dto.diet.DietResponseDTO;
+import com.nutritionangel.woi.dto.diet.MenuDTO;
+import com.nutritionangel.woi.dto.diet.MenuResponseDTO;
 import com.nutritionangel.woi.entity.DietEntity;
 import com.nutritionangel.woi.entity.MenuEntity;
 import com.nutritionangel.woi.enums.DietType;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,32 +32,67 @@ public class DietService {
     }
 
     // Diet 생성 후 저장
+//    @Transactional
+//    public DietEntity createDiet(DietDTO dietDTO) {
+//        DietEntity dietEntity = DietEntity.builder()
+//                .type(DietType.valueOf(dietDTO.getType()))
+//                .week(Weeks.valueOf(dietDTO.getWeek()))
+//                .date(LocalDateTime.now())
+//                .build();
+//
+//        DietEntity savedDiet = dietRepository.save(dietEntity);
+//
+//        return savedDiet;
+//    }
     @Transactional
-    public DietEntity createDiet(DietDTO dietDTO) {
+    public DietResponseDTO createDiet(DietDTO dietDTO) {
         DietEntity dietEntity = DietEntity.builder()
                 .type(DietType.valueOf(dietDTO.getType()))
                 .week(Weeks.valueOf(dietDTO.getWeek()))
                 .date(LocalDateTime.now())
                 .build();
 
-        DietEntity savedDiet = dietRepository.save(dietEntity);
+        List<MenuDTO> menuDTOs = dietDTO.getMenus() != null ? dietDTO.getMenus() : new ArrayList<>();
 
-        List<MenuEntity> menuEntities = dietDTO.getMenus().stream().map(menuDTO -> {
-            return MenuEntity.builder()
+        List<MenuEntity> menuEntities = menuDTOs.stream().map(menuDTO -> {
+            MenuEntity menuEntity = MenuEntity.builder()
                     .ingredients(menuDTO.getIngredients())
                     .carbohydrate(menuDTO.getCarbohydrate())
                     .protein(menuDTO.getProtein())
                     .fat(menuDTO.getFat())
-                    .food_name(menuDTO.getFoodName())
+                    .foodName(menuDTO.getFoodName())
                     .calories(menuDTO.getCalories())
-                    .diet(savedDiet)
+                    .diet(dietEntity)
                     .build();
+            return menuEntity;
         }).collect(Collectors.toList());
 
+        dietEntity.getMenus().addAll(menuEntities);
+
+        DietEntity savedDiet = dietRepository.save(dietEntity);
         menuRepository.saveAll(menuEntities);
 
-        savedDiet.setMenus(menuEntities);
-        return savedDiet;
+        return convertToResponseDTO(savedDiet);
+    }
+
+    private DietResponseDTO convertToResponseDTO(DietEntity dietEntity) {
+        DietResponseDTO responseDTO = new DietResponseDTO();
+        responseDTO.setDietId(dietEntity.getDietId());
+        responseDTO.setDate(dietEntity.getDate().toString());
+        responseDTO.setType(dietEntity.getType().name());
+        responseDTO.setWeek(dietEntity.getWeek().name());
+        responseDTO.setMenus(dietEntity.getMenus().stream().map(menuEntity -> {
+            MenuResponseDTO menuResponseDTO = new MenuResponseDTO();
+            menuResponseDTO.setMenuId(menuEntity.getMenuId());
+            menuResponseDTO.setIngredients(menuEntity.getIngredients());
+            menuResponseDTO.setCarbohydrate(menuEntity.getCarbohydrate());
+            menuResponseDTO.setProtein(menuEntity.getProtein());
+            menuResponseDTO.setFat(menuEntity.getFat());
+            menuResponseDTO.setFoodName(menuEntity.getFoodName());
+            menuResponseDTO.setCalories(menuEntity.getCalories());
+            return menuResponseDTO;
+        }).collect(Collectors.toList()));
+        return responseDTO;
     }
 
     @Transactional
@@ -70,7 +109,7 @@ public class DietService {
                     .carbohydrate(menuDTO.getCarbohydrate())
                     .protein(menuDTO.getProtein())
                     .fat(menuDTO.getFat())
-                    .food_name(menuDTO.getFoodName())
+                    .foodName(menuDTO.getFoodName())
                     .calories(menuDTO.getCalories())
                     .diet(existingDiet)
                     .build();

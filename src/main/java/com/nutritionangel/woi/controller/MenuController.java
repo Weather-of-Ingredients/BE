@@ -44,9 +44,10 @@ public class MenuController {
         return ResponseEntity.ok(menuEntity);
     }
 
-    @PostMapping("/menu/save")
-    public void fetchAndSaveMenus(@RequestParam int dietId) {
-        menuService.fetchAndSaveMenu(dietId);
+    @GetMapping("/menu/save")
+    public ResponseEntity<Void> fetchAndSaveMenus(@RequestParam int dietId, String query) {
+        menuService.fetchAndSaveMenu(dietId, query);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/getNut/{food_Name}")

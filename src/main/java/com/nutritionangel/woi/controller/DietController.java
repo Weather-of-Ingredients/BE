@@ -1,9 +1,11 @@
 package com.nutritionangel.woi.controller;
 
 import com.nutritionangel.woi.dto.diet.DietDTO;
+import com.nutritionangel.woi.dto.diet.DietResponseDTO;
 import com.nutritionangel.woi.dto.diet.MenuDTO;
 import com.nutritionangel.woi.entity.DietEntity;
 import com.nutritionangel.woi.service.DietService;
+import com.nutritionangel.woi.service.MenuService;
 import com.nutritionangel.woi.service.S3UploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -34,11 +37,13 @@ public class DietController {
     private String service_Type;
 
     private final DietService dietService;
+    private final MenuService menuService;
     private final S3UploadService s3UploadService;
 
     @Autowired
-    public DietController(DietService dietService, S3UploadService s3UploadService) {
+    public DietController(DietService dietService, S3UploadService s3UploadService, MenuService menuService) {
         this.dietService = dietService;
+        this.menuService = menuService;
         this.s3UploadService = s3UploadService;
     }
 
@@ -53,19 +58,25 @@ public class DietController {
         }
     }
 
-    @PostMapping("/diet/add")
-    public ResponseEntity<DietEntity> createDiet(@RequestBody DietDTO dietDTO) {
-        DietEntity dietEntity = dietService.createDiet(dietDTO);
-        return ResponseEntity.ok(dietEntity);
+//    @GetMapping("/searchMenu")
+//    public ResponseEntity<List<MenuDTO>> searchMenu(@RequestParam String query) {
+//        List<MenuDTO> menuList = menuService.searchMenu(query);
+//        return ResponseEntity.ok(menuList);
+//    }
+
+    @PostMapping("/diet") // 식단 작성
+    public ResponseEntity<DietResponseDTO> createDiet(@RequestBody DietDTO dietDTO) {
+        DietResponseDTO dietResponseDTO = dietService.createDiet(dietDTO);
+        return ResponseEntity.ok(dietResponseDTO);
     }
 
-    @PutMapping("/diet/{dietId}")
-    public ResponseEntity<DietEntity> updateDiet(@PathVariable int dietId, @RequestBody DietDTO dietDTO) {
+    @PutMapping("/diet/update/{dietId}") // 식단 업데이트
+    public ResponseEntity<DietEntity> updateDiet(@PathVariable int dietId, DietDTO dietDTO) {
         DietEntity updatedDiet = dietService.updateDiet(dietId, dietDTO);
         return ResponseEntity.ok(updatedDiet);
     }
 
-    @DeleteMapping("/diet/{dietId}")
+    @DeleteMapping("/diet/delete/{dietId}") // 식단 삭제
     public ResponseEntity<Void> deleteDiet(@PathVariable int dietId) {
         dietService.deleteDiet(dietId);
         return ResponseEntity.noContent().build();

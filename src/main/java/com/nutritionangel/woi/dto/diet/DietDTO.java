@@ -1,7 +1,9 @@
 package com.nutritionangel.woi.dto.diet;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -13,5 +15,5 @@ public class DietDTO {
     private String date;
     private String type;
     private String week;
-    private List<MenuDTO> menus;
+    private List<MenuDTO> menus = new ArrayList<>();
 }
