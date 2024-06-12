@@ -8,6 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @Data
 public class MenuDTO {
+    @Getter
+    private Integer menuId;
     private String ingredients;
     private double carbohydrate;
     private double protein;
@@ -15,4 +17,5 @@ public class MenuDTO {
     private String foodName;
     private double calories;
     private DietDTO diet;
+
 }

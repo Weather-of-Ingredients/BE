@@ -3,6 +3,7 @@ package com.nutritionangel.woi.controller;
 import com.nutritionangel.woi.dto.diet.DietDTO;
 import com.nutritionangel.woi.dto.diet.DietResponseDTO;
 import com.nutritionangel.woi.dto.diet.MenuDTO;
+import com.nutritionangel.woi.dto.diet.MenuResponseDTO;
 import com.nutritionangel.woi.entity.DietEntity;
 import com.nutritionangel.woi.service.DietService;
 import com.nutritionangel.woi.service.MenuService;
@@ -22,6 +23,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -70,16 +72,37 @@ public class DietController {
         return ResponseEntity.ok(dietResponseDTO);
     }
 
-    @PutMapping("/diet/update/{dietId}") // 식단 업데이트
-    public ResponseEntity<DietEntity> updateDiet(@PathVariable int dietId, DietDTO dietDTO) {
+    @PutMapping("/diet/update/{dietId}")
+    public ResponseEntity<DietResponseDTO> updateDiet(@PathVariable int dietId, @RequestBody DietDTO dietDTO) {
         DietEntity updatedDiet = dietService.updateDiet(dietId, dietDTO);
-        return ResponseEntity.ok(updatedDiet);
+        DietResponseDTO dietResponseDTO = convertToResponseDTO(updatedDiet);
+        return ResponseEntity.ok(dietResponseDTO);
     }
 
-    @DeleteMapping("/diet/delete/{dietId}") // 식단 삭제
+    @DeleteMapping("/diet/delete/{dietId}")
     public ResponseEntity<Void> deleteDiet(@PathVariable int dietId) {
         dietService.deleteDiet(dietId);
         return ResponseEntity.noContent().build();
+    }
+
+    private DietResponseDTO convertToResponseDTO(DietEntity dietEntity) {
+        DietResponseDTO responseDTO = new DietResponseDTO();
+        responseDTO.setDietId(dietEntity.getDietId());
+        responseDTO.setDate(dietEntity.getDate().toString());
+        responseDTO.setType(dietEntity.getType().name());
+        responseDTO.setWeek(dietEntity.getWeek().name());
+        responseDTO.setMenus(dietEntity.getMenus().stream().map(menuEntity -> {
+            MenuResponseDTO menuResponseDTO = new MenuResponseDTO();
+            menuResponseDTO.setMenuId(menuEntity.getMenuId());
+            menuResponseDTO.setIngredients(menuEntity.getIngredients());
+            menuResponseDTO.setCarbohydrate(menuEntity.getCarbohydrate());
+            menuResponseDTO.setProtein(menuEntity.getProtein());
+            menuResponseDTO.setFat(menuEntity.getFat());
+            menuResponseDTO.setFoodName(menuEntity.getFoodName());
+            menuResponseDTO.setCalories(menuEntity.getCalories());
+            return menuResponseDTO;
+        }).collect(Collectors.toList()));
+        return responseDTO;
     }
 
     @GetMapping("/getFood/{food_Name}")

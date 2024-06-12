@@ -15,5 +15,6 @@ public class DietDTO {
     private String date;
     private String type;
     private String week;
+    @Builder.Default
     private List<MenuDTO> menus = new ArrayList<>();
 }

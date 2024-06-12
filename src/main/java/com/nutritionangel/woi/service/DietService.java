@@ -101,26 +101,43 @@ public class DietService {
                 .orElseThrow(() -> new RuntimeException("Diet not found"));
 
         existingDiet.setType(DietType.valueOf(dietDTO.getType()));
+        existingDiet.setWeek(Weeks.valueOf(dietDTO.getWeek()));
         existingDiet.setDate(LocalDateTime.now());
 
-        List<MenuEntity> menuEntities = dietDTO.getMenus().stream().map(menuDTO -> {
-            return MenuEntity.builder()
-                    .ingredients(menuDTO.getIngredients())
-                    .carbohydrate(menuDTO.getCarbohydrate())
-                    .protein(menuDTO.getProtein())
-                    .fat(menuDTO.getFat())
-                    .foodName(menuDTO.getFoodName())
-                    .calories(menuDTO.getCalories())
-                    .diet(existingDiet)
-                    .build();
-        }).collect(Collectors.toList());
+        List<MenuEntity> existingMenus = existingDiet.getMenus();
+        List<MenuDTO> newMenuDTOs = dietDTO.getMenus();
 
-        menuRepository.deleteAll(existingDiet.getMenus());
-        menuRepository.saveAll(menuEntities);
+        // 메뉴 업데이트 및 추가
+        for (MenuDTO newMenuDTO : newMenuDTOs) {
+            MenuEntity menuEntity = existingMenus.stream()
+                    .filter(m -> m.getMenuId().equals(newMenuDTO.getMenuId()))
+                    .findFirst()
+                    .orElse(new MenuEntity());
 
-        existingDiet.setMenus(menuEntities);
+            menuEntity.setIngredients(newMenuDTO.getIngredients());
+            menuEntity.setCarbohydrate(newMenuDTO.getCarbohydrate());
+            menuEntity.setProtein(newMenuDTO.getProtein());
+            menuEntity.setFat(newMenuDTO.getFat());
+            menuEntity.setFoodName(newMenuDTO.getFoodName());
+            menuEntity.setCalories(newMenuDTO.getCalories());
+            menuEntity.setDiet(existingDiet);
+
+            if (menuEntity.getMenuId() == null) {
+                existingMenus.add(menuEntity);
+            }
+        }
+
+        // 제거된 메뉴 삭제
+        List<MenuEntity> menusToDelete = existingMenus.stream()
+                .filter(m -> newMenuDTOs.stream().noneMatch(dto -> dto.getMenuId().equals(m.getMenuId())))
+                .collect(Collectors.toList());
+
+        menuRepository.deleteAll(menusToDelete);
+
+        existingDiet.setMenus(existingMenus);
         return dietRepository.save(existingDiet);
     }
+
 
     @Transactional
     public void deleteDiet(int dietId) {
