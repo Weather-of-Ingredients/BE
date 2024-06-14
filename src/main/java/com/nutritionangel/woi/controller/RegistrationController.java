@@ -132,22 +132,40 @@ public class RegistrationController {
     private final OAuthLoginService oAuthLoginService;
 
 
-    @PostMapping("/register")
-    public ResponseEntity<?> processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) {
-        if(result.hasErrors()) {
-            return ResponseEntity.badRequest().body("Validation errors");
-        }
-
-        try {
-            userService.register(userRegisterDto); // 최종적으로 DB에 저장
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed: " + e.getMessage());
-        }
-
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Registration completed");
-        return ResponseEntity.ok(response);
+//    @PostMapping("/register")
+//    public ResponseEntity<?> processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) {
+//        if(result.hasErrors()) {
+//            return ResponseEntity.badRequest().body("Validation errors");
+//        }
+//
+//        try {
+//            userService.register(userRegisterDto); // 최종적으로 DB에 저장
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed: " + e.getMessage());
+//        }
+//
+//        Map<String, String> response = new HashMap<>();
+//        response.put("message", "Registration completed");
+//        return ResponseEntity.ok(response);
+//    }
+@PostMapping("/register")
+public ResponseEntity<?> processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) {
+    if(result.hasErrors()) {
+        Map<String, String> errors = new HashMap<>();
+        result.getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
+        return ResponseEntity.badRequest().body(errors);
     }
+
+    try {
+        userService.register(userRegisterDto); // 최종적으로 DB에 저장
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed: " + e.getMessage());
+    }
+
+    Map<String, String> response = new HashMap<>();
+    response.put("message", "Registration completed");
+    return ResponseEntity.ok(response);
+}
 
 //    // 로그인
 //    @PostMapping("/login")
