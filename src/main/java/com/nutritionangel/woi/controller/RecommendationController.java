@@ -26,9 +26,9 @@ public class RecommendationController {
 
 //    private final RecommendationService recommendationService;
 
-    @Value("${openApi.serviceKey2}")
+    @Value("${openApi.cropServiceKey}")
     private String serviceKey2;
-    @Value("${openApi.apiUrl}")
+    @Value("${openApi.cropCallBackUrl}")
     private String apiUrl;
 
     HttpURLConnection urlConnection = null;
