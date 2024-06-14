@@ -107,12 +107,19 @@ public class DietService {
         List<MenuEntity> existingMenus = existingDiet.getMenus();
         List<MenuDTO> newMenuDTOs = dietDTO.getMenus();
 
+        List<MenuEntity> menuEntities = new ArrayList<>();
+
         // 메뉴 업데이트 및 추가
         for (MenuDTO newMenuDTO : newMenuDTOs) {
-            MenuEntity menuEntity = existingMenus.stream()
-                    .filter(m -> m.getMenuId().equals(newMenuDTO.getMenuId()))
-                    .findFirst()
-                    .orElse(new MenuEntity());
+            MenuEntity menuEntity;
+            if (newMenuDTO.getMenuId() != null) {
+                menuEntity = existingMenus.stream()
+                        .filter(m -> m.getMenuId().equals(newMenuDTO.getMenuId()))
+                        .findFirst()
+                        .orElse(new MenuEntity());
+            } else {
+                menuEntity = new MenuEntity();
+            }
 
             menuEntity.setIngredients(newMenuDTO.getIngredients());
             menuEntity.setCarbohydrate(newMenuDTO.getCarbohydrate());
@@ -122,19 +129,17 @@ public class DietService {
             menuEntity.setCalories(newMenuDTO.getCalories());
             menuEntity.setDiet(existingDiet);
 
-            if (menuEntity.getMenuId() == null) {
-                existingMenus.add(menuEntity);
-            }
+            menuEntities.add(menuEntity);
         }
 
         // 제거된 메뉴 삭제
         List<MenuEntity> menusToDelete = existingMenus.stream()
-                .filter(m -> newMenuDTOs.stream().noneMatch(dto -> dto.getMenuId().equals(m.getMenuId())))
+                .filter(m -> newMenuDTOs.stream().noneMatch(dto -> dto.getMenuId() != null && dto.getMenuId().equals(m.getMenuId())))
                 .collect(Collectors.toList());
 
         menuRepository.deleteAll(menusToDelete);
 
-        existingDiet.setMenus(existingMenus);
+        existingDiet.setMenus(menuEntities);
         return dietRepository.save(existingDiet);
     }
 
