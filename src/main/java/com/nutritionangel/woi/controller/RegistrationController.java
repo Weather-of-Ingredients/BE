@@ -131,31 +131,6 @@ public class RegistrationController {
 
     private final OAuthLoginService oAuthLoginService;
 
-//    @PostMapping("/register")
-//    public String processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) throws Exception {
-//
-//        System.out.println(userRegisterDto);
-//
-//        if(result.hasErrors()) return "redirect:/register";
-//
-//        userService.register(userRegisterDto); // 최종적으로 DB에 저장
-//
-//        return "redirect:/register-completed";
-//    }
-
-//    @PostMapping("/register")
-//    public ResponseEntity<?> processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) throws Exception {
-//
-//        System.out.println(userRegisterDto);
-//
-//        if (result.hasErrors()) {
-//            return ResponseEntity.badRequest().body("Validation errors");
-//        }
-//
-//        userService.register(userRegisterDto); // 최종적으로 DB에 저장
-//
-//        return ResponseEntity.ok().body("Registration completed");
-//    }
 
     @PostMapping("/register")
     public ResponseEntity<?> processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) {
@@ -174,21 +149,42 @@ public class RegistrationController {
         return ResponseEntity.ok(response);
     }
 
+//    // 로그인
+//    @PostMapping("/login")
+//    public String login(@RequestBody LoginRequestDTO loginRequestDto){
+//        UserEntity user = userService.login(loginRequestDto);
+//
+//        // 로그인 아이디나 비밀번호가 틀린 경우 global error return
+//        if(user == null){
+//            return "로그인 아이디 또는 비밀번호가 틀렸습니다.";
+//        }
+//
+//        // 로그인 성공 => Jwt Token 발급
+//        long expiredTimeMs = 1000 * 60 * 60 * 24L;  // 1일, 24시간
+//        String jwtToken = jwtUtil.createJwt(user.getLoginId(), user.getRole(), expiredTimeMs);
+//
+//        return jwtToken;
+//    }
+
     // 로그인
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequestDTO loginRequestDto){
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequestDTO loginRequestDto){
         UserEntity user = userService.login(loginRequestDto);
 
-        // 로그인 아이디나 비밀번호가 틀린 경우 global error return
+        // 로그인 아이디나 비밀번호가 틀린 경우
         if(user == null){
-            return "로그인 아이디 또는 비밀번호가 틀렸습니다.";
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "로그인 아이디 또는 비밀번호가 틀렸습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
 
         // 로그인 성공 => Jwt Token 발급
         long expiredTimeMs = 1000 * 60 * 60 * 24L;  // 1일, 24시간
         String jwtToken = jwtUtil.createJwt(user.getLoginId(), user.getRole(), expiredTimeMs);
 
-        return jwtToken;
+        Map<String, String> response = new HashMap<>();
+        response.put("token", jwtToken);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login/kakao")
