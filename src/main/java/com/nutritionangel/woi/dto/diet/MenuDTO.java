@@ -1,5 +1,6 @@
 package com.nutritionangel.woi.dto.diet;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 @Builder
@@ -7,10 +8,14 @@ import lombok.*;
 @AllArgsConstructor
 @Data
 public class MenuDTO {
+    @Getter
+    private Integer menuId;
     private String ingredients;
-    private String carbohydrate;
-    private String protein;
-    private String fat;
-    private String food_name;
-    private String calories;
+    private double carbohydrate;
+    private double protein;
+    private double fat;
+    private String foodName;
+    private double calories;
+    private DietDTO diet;
+
 }

@@ -22,23 +22,23 @@ public class MenuEntity {
     @Column(name = "menu_id")
     private Integer menuId;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String ingredients;
 
-    @Column(nullable = false)
-    private String carbohydrate;
+//    @Column(nullable = false)
+    private double carbohydrate;
 
-    @Column(nullable = false)
-    private String protein;
+//    @Column(nullable = false)
+    private double protein;
 
-    @Column(nullable = false)
-    private String fat;
+//    @Column(nullable = false)
+    private double fat;
 
-    @Column(nullable = false)
-    private String food_name;
+//    @Column(nullable = false)
+    private String foodName;
 
-    @Column(nullable = false)
-    private String calories;
+//    @Column(nullable = false)
+    private double calories;
 
     @ManyToOne
     @JoinColumn(name = "diet_id")

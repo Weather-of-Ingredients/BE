@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -34,6 +35,7 @@ public class DietEntity {
     @Enumerated(EnumType.STRING)
     private Weeks week;
 
-    @OneToMany(mappedBy = "diet")
-    private List<MenuEntity> menus;
+    @Builder.Default
+    @OneToMany(mappedBy = "diet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MenuEntity> menus = new ArrayList<>();
 }

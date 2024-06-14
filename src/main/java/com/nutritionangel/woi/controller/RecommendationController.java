@@ -1,5 +1,6 @@
 package com.nutritionangel.woi.controller;
 
+
 import com.nutritionangel.woi.dto.crops.CropItem;
 import com.nutritionangel.woi.dto.crops.CropItems;
 import com.nutritionangel.woi.dto.recommendation.RecommendationDTO;
@@ -8,6 +9,7 @@ import com.nutritionangel.woi.service.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,9 +38,11 @@ public class RecommendationController {
     @Value("${openApi.cropEnd}")
     private String cropEnd;
 
+
     HttpURLConnection urlConnection = null;
     InputStream stream = null;
     String result = null;
+
     private CropItems cropItems;
 
 
@@ -84,12 +88,14 @@ public class RecommendationController {
                 cropStart + "/" +
                 cropEnd;
 
+
         try{
             URL url = new URL(urlStr);
             urlConnection = (HttpURLConnection) url.openConnection();
             stream = getNetworkConnection(urlConnection);
             result = readStreamToString(stream);
             cropItems = recommendationService.parsingJson(result);
+
 
         }catch (IOException e){
             e.printStackTrace();
@@ -98,6 +104,8 @@ public class RecommendationController {
                 urlConnection.disconnect();
             }
         }
+
+
         return cropItems.getCropItems();
     }
 
@@ -113,6 +121,7 @@ public class RecommendationController {
             return new CropResponseDTO(false, null);
         }
         return new CropResponseDTO(true, createRecommendationDTO);
+
     }
 
     private InputStream getNetworkConnection(HttpURLConnection urlConnection) throws IOException{
@@ -130,6 +139,9 @@ public class RecommendationController {
 
     private String readStreamToString(InputStream stream) throws IOException{
         StringBuilder result = new StringBuilder();
+
+        //문자 데이터를 읽기 위해 wrapping
+
         BufferedReader br = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
         String readLine;
         while((readLine = br.readLine()) != null) {
@@ -141,4 +153,6 @@ public class RecommendationController {
         return result.toString();
     }
 
+
 }
+
