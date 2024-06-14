@@ -113,9 +113,13 @@ import com.nutritionangel.woi.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RequestMapping("/api/user")
@@ -127,16 +131,47 @@ public class RegistrationController {
 
     private final OAuthLoginService oAuthLoginService;
 
-    @PostMapping("/register")   // 약을 여러 개 얻어올 수 있는 버전
-    public String processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) throws Exception {
+//    @PostMapping("/register")
+//    public String processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) throws Exception {
+//
+//        System.out.println(userRegisterDto);
+//
+//        if(result.hasErrors()) return "redirect:/register";
+//
+//        userService.register(userRegisterDto); // 최종적으로 DB에 저장
+//
+//        return "redirect:/register-completed";
+//    }
 
-        System.out.println(userRegisterDto);
+//    @PostMapping("/register")
+//    public ResponseEntity<?> processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) throws Exception {
+//
+//        System.out.println(userRegisterDto);
+//
+//        if (result.hasErrors()) {
+//            return ResponseEntity.badRequest().body("Validation errors");
+//        }
+//
+//        userService.register(userRegisterDto); // 최종적으로 DB에 저장
+//
+//        return ResponseEntity.ok().body("Registration completed");
+//    }
 
-        if(result.hasErrors()) return "redirect:/register";
+    @PostMapping("/register")
+    public ResponseEntity<?> processSignup(@RequestBody @Valid UserRegisterDTO userRegisterDto, BindingResult result) {
+        if(result.hasErrors()) {
+            return ResponseEntity.badRequest().body("Validation errors");
+        }
 
-        userService.register(userRegisterDto); // 최종적으로 DB에 저장
+        try {
+            userService.register(userRegisterDto); // 최종적으로 DB에 저장
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed: " + e.getMessage());
+        }
 
-        return "redirect:/register-completed";
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Registration completed");
+        return ResponseEntity.ok(response);
     }
 
     // 로그인
