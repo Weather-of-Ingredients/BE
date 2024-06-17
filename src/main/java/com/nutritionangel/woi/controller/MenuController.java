@@ -5,6 +5,8 @@ import com.nutritionangel.woi.entity.MenuEntity;
 import com.nutritionangel.woi.service.DietService;
 import com.nutritionangel.woi.service.MenuService;
 import com.nutritionangel.woi.service.S3UploadService;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,10 +26,10 @@ import java.nio.charset.StandardCharsets;
 @RequestMapping("/api")
 public class MenuController {
 
-    @Value("${openApi.serviceKey}")
+    @Value("${openApi.MserviceKey}")
     private String serviceKey;
 
-    @Value("${openApi.callBackUrl}")
+    @Value("${openApi.McallBackUrl}")
     private String callBackUrl;
 
     @Autowired
@@ -52,6 +54,7 @@ public class MenuController {
 
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
+        urlConnection.setRequestProperty("Content-type", "application/json");
 
         BufferedReader br;
 
