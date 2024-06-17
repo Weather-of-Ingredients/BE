@@ -108,6 +108,7 @@ import com.nutritionangel.woi.dto.user.LoginRequestDTO;
 import com.nutritionangel.woi.dto.user.UserRegisterDTO;
 import com.nutritionangel.woi.entity.UserEntity;
 import com.nutritionangel.woi.jwt.JwtUtil;
+import com.nutritionangel.woi.repository.UserRepository;
 import com.nutritionangel.woi.service.OAuthLoginService;
 import com.nutritionangel.woi.service.UserService;
 import jakarta.validation.Valid;
@@ -130,6 +131,8 @@ public class RegistrationController {
     private final JwtUtil jwtUtil;
 
     private final OAuthLoginService oAuthLoginService;
+
+    private final UserRepository userRepository;
 
 
 //    @PostMapping("/register")
@@ -205,8 +208,8 @@ public ResponseEntity<?> processSignup(@RequestBody @Valid UserRegisterDTO userR
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/login/kakao")
-    public ResponseEntity<AuthTokens> loginKakao(@RequestBody KakaoLoginParams params) {
-        return ResponseEntity.ok(oAuthLoginService.login(params));
-    }
+//    @PostMapping("/login/kakao")
+//    public ResponseEntity<AuthTokens> loginKakao(@RequestBody KakaoLoginParams params) {
+//        return ResponseEntity.ok(oAuthLoginService.login(params));
+//    }
 }

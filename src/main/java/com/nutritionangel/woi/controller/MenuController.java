@@ -24,10 +24,10 @@ import java.nio.charset.StandardCharsets;
 @RequestMapping("/api")
 public class MenuController {
 
-    @Value("${openApi.serviceKey3}")
+    @Value("${openApi.serviceKey}")
     private String serviceKey;
 
-    @Value("${openApi.callBackUrl2}")
+    @Value("${openApi.callBackUrl}")
     private String callBackUrl;
 
     @Autowired

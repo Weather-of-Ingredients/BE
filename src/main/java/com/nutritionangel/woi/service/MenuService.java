@@ -28,10 +28,10 @@ public class MenuService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${openApi.serviceKey3}")
+    @Value("${openApi.serviceKey}")
     private String serviceKey;
 
-    @Value("${openApi.callBackUrl2}")
+    @Value("${openApi.callBackUrl}")
     private String callBackUrl;
 
     @Autowired
