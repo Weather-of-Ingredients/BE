@@ -8,6 +8,7 @@ import com.nutritionangel.woi.dto.user.UserRegisterDTO;
 import com.nutritionangel.woi.entity.UserEntity;
 import com.nutritionangel.woi.jwt.JwtUtil;
 import com.nutritionangel.woi.projection.user.GetUser;
+import com.nutritionangel.woi.repository.UserRepository;
 import com.nutritionangel.woi.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ import java.security.Principal;
 public class UserController {
 
     private final UserService userService;
+
+    private final UserRepository userRepository;
 
     @GetMapping("/logout")
     public ResponseEntity<ResponseDTO> logout(@RequestParam("loginId") String loginId) {
