@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class DietEntity {
     private Integer dietId;
 
     @CreatedDate
-    private LocalDateTime date;
+    private LocalDate date;
 
     @Enumerated(EnumType.STRING)
     private DietType type;
