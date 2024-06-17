@@ -1,14 +1,15 @@
 package com.nutritionangel.woi.controller;
 
-//import com.nutritionangel.woi.entity.CropItem;
-//import com.nutritionangel.woi.entity.CropItems;
-//import com.nutritionangel.woi.service.RecommendationService;
+
+import com.nutritionangel.woi.dto.crops.CropItem;
+import com.nutritionangel.woi.dto.crops.CropItems;
+import com.nutritionangel.woi.dto.recommendation.RecommendationDTO;
+import com.nutritionangel.woi.dto.response.CropResponseDTO;
+import com.nutritionangel.woi.service.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,36 +17,76 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/crops")
 public class RecommendationController {
 
-//    private final RecommendationService recommendationService;
+    private final RecommendationService recommendationService;
 
     @Value("${openApi.cropServiceKey}")
-    private String serviceKey2;
+    private String serviceKey;
     @Value("${openApi.cropCallBackUrl}")
-    private String apiUrl;
+    private String callBackUrl;
+    @Value("${openApi.dataType}")
+    private String dataType;
+    @Value("${openApi.cropApiUrl}")
+    private String ApiUrl;
+    @Value("${openApi.cropStart}")
+    private String cropStart;
+    @Value("${openApi.cropEnd}")
+    private String cropEnd;
 
     HttpURLConnection urlConnection = null;
     InputStream stream = null;
     String result = null;
-//    private CropItems cropItems;
-//
-//
-//    @Autowired
-//    public RecommendationController(RecommendationService recommendationService) {
-//        this.recommendationService = recommendationService;
-//    }
-   /* @GetMapping("")
+
+    private CropItems cropItems;
+
+
+    @Autowired
+    public RecommendationController(RecommendationService recommendationService) {
+        this.recommendationService = recommendationService;
+    }
+
+    /*year 과 month 에 해당하는 good, bad, alt crop 보여주는 url
+    * (홈화면 - 배너)
+    * */
+    @GetMapping("/{year}/{month}")
+    public CropResponseDTO getRecommendationDTO(@PathVariable("year") int year, @PathVariable("month") int month){
+
+        RecommendationDTO recommendationDTO = recommendationService.getRecommendationDTOService(year, month);
+        if(recommendationDTO == null){
+            return new CropResponseDTO(false, null);
+        }
+        return new CropResponseDTO(true, recommendationDTO);
+    }
+
+    /*
+    * 어려운 작물 가져오기
+    * (기후예측 - 어려운 작물 Get)
+    * */
+    @GetMapping("/{year}/{month}/{bad_crops}")
+    public CropResponseDTO badCrops(@PathVariable("year") int year, @PathVariable("month") int month, @PathVariable("bad_crops") String bad_crop){
+        List<CropItem> cropItems = recommendationService.badCropService(year, month, bad_crop);
+        if(cropItems == null){
+            return new CropResponseDTO(false, null);
+        }
+        return new CropResponseDTO(true, cropItems);
+    }
+
+    //OpenApi 연결
+    @GetMapping("")
     public List<CropItem> callApi() throws IOException {
-        String urlStr = apiUrl +
-                serviceKey +
-                "/json/Grid_20171128000000000572_1/1/10";
+
+        String urlStr = callBackUrl +
+                serviceKey + "/" +
+                dataType + "/" +
+                ApiUrl + "/" +
+                cropStart + "/" +
+                cropEnd;
+
 
         try{
             URL url = new URL(urlStr);
@@ -53,6 +94,8 @@ public class RecommendationController {
             stream = getNetworkConnection(urlConnection);
             result = readStreamToString(stream);
             cropItems = recommendationService.parsingJson(result);
+
+
         }catch (IOException e){
             e.printStackTrace();
         }finally {
@@ -60,34 +103,24 @@ public class RecommendationController {
                 urlConnection.disconnect();
             }
         }
+
+
         return cropItems.getCropItems();
-    }*/
+    }
 
+    /*input year, month, crop type 들어오면
+    * db에 저장하는 url
+    * (기후예측 - post)
+    * */
+    @PostMapping("/add/{crop_type}")
+    private CropResponseDTO addCrops(@PathVariable("crop_type") String crop_type, @RequestBody RecommendationDTO recommendationDTO){
 
-    @GetMapping("/{product_name}")
-    public String callApi2(@PathVariable("product_name") String product_name) throws IOException {
-        String crop_name = URLEncoder.encode(product_name, StandardCharsets.UTF_8);
-
-        System.out.println(crop_name);
-
-        String urlStr = apiUrl +
-                serviceKey2 +
-                "/json/Grid_20171128000000000572_1/1/5?PRDLST_NM=" + crop_name;
-
-        try{
-            URL url = new URL(urlStr);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            stream = getNetworkConnection(urlConnection);
-            result = readStreamToString(stream);
-
-        }catch (IOException e){
-            e.printStackTrace();
-        }finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
+        RecommendationDTO createRecommendationDTO = recommendationService.createRecommendationDTOService(crop_type, recommendationDTO);
+        if(recommendationDTO == null){
+            return new CropResponseDTO(false, null);
         }
-        return result;
+        return new CropResponseDTO(true, createRecommendationDTO);
+
     }
 
     private InputStream getNetworkConnection(HttpURLConnection urlConnection) throws IOException{
@@ -105,7 +138,9 @@ public class RecommendationController {
 
     private String readStreamToString(InputStream stream) throws IOException{
         StringBuilder result = new StringBuilder();
+
         //문자 데이터를 읽기 위해 wrapping
+
         BufferedReader br = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
         String readLine;
         while((readLine = br.readLine()) != null) {
@@ -117,4 +152,6 @@ public class RecommendationController {
         return result.toString();
     }
 
+
 }
+
