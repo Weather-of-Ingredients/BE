@@ -24,10 +24,10 @@ import java.nio.charset.StandardCharsets;
 @RequestMapping("/api")
 public class MenuController {
 
-    @Value("${openApi.serviceKey3}")
+    @Value("${openApi.serviceKey}")
     private String serviceKey;
 
-    @Value("${openApi.callBackUrl2}")
+    @Value("${openApi.callBackUrl}")
     private String callBackUrl;
 
     @Autowired
@@ -36,18 +36,6 @@ public class MenuController {
     @Autowired
     public MenuController(MenuService menuService) {
         this.menuService = menuService;
-    }
-
-    @GetMapping("/menu/{menuId}")
-    public ResponseEntity<MenuEntity> getMenuById(@PathVariable int menuId) {
-        MenuEntity menuEntity = menuService.getMenuById(menuId);
-        return ResponseEntity.ok(menuEntity);
-    }
-
-    @GetMapping("/menu/save")
-    public ResponseEntity<Void> fetchAndSaveMenus(@RequestParam int dietId, String query) {
-        menuService.fetchAndSaveMenu(dietId, query);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/getNut/{food_Name}")
