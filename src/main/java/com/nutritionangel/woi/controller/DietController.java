@@ -2,9 +2,7 @@ package com.nutritionangel.woi.controller;
 
 import com.nutritionangel.woi.dto.diet.DietDTO;
 import com.nutritionangel.woi.dto.diet.DietResponseDTO;
-import com.nutritionangel.woi.dto.diet.MenuDTO;
 import com.nutritionangel.woi.dto.diet.MenuResponseDTO;
-import com.nutritionangel.woi.entity.DietEntity;
 import com.nutritionangel.woi.service.DietService;
 import com.nutritionangel.woi.service.MenuService;
 import com.nutritionangel.woi.service.S3UploadService;
@@ -42,6 +40,8 @@ public class DietController {
     private final MenuService menuService;
     private final S3UploadService s3UploadService;
 
+
+
     @Autowired
     public DietController(DietService dietService, S3UploadService s3UploadService, MenuService menuService) {
         this.dietService = dietService;
@@ -66,6 +66,19 @@ public class DietController {
 //        return ResponseEntity.ok(menuList);
 //    }
 
+    @GetMapping("/diet/all") // 식단 목록 조회
+    public ResponseEntity<List<DietDTO>> getDietList(){
+        List<DietDTO> dietList = dietService.getAllDiets();
+        return ResponseEntity.ok(dietList);
+    }
+
+
+    @GetMapping("/diet/{date}") // 일자별 식단 목록 조회
+    public ResponseEntity<List<DietDTO>> getDietByDate(@PathVariable String date) {
+        List<DietDTO> dietList = dietService.getDietByDate(date);
+        return ResponseEntity.ok(dietList);
+    }
+
     @PostMapping("/diet") // 식단 작성
     public ResponseEntity<DietResponseDTO> createDiet(@RequestBody DietDTO dietDTO) {
         DietResponseDTO dietResponseDTO = dietService.createDiet(dietDTO);
@@ -74,7 +87,7 @@ public class DietController {
 
     @PutMapping("/diet/update/{dietId}")
     public ResponseEntity<DietResponseDTO> updateDiet(@PathVariable int dietId, @RequestBody DietDTO dietDTO) {
-        DietEntity updatedDiet = dietService.updateDiet(dietId, dietDTO);
+        DietResponseDTO updatedDiet = dietService.updateDiet(dietId, dietDTO);
         DietResponseDTO dietResponseDTO = convertToResponseDTO(updatedDiet);
         return ResponseEntity.ok(dietResponseDTO);
     }
@@ -85,12 +98,12 @@ public class DietController {
         return ResponseEntity.noContent().build();
     }
 
-    private DietResponseDTO convertToResponseDTO(DietEntity dietEntity) {
+    private DietResponseDTO convertToResponseDTO(DietResponseDTO dietEntity) {
         DietResponseDTO responseDTO = new DietResponseDTO();
         responseDTO.setDietId(dietEntity.getDietId());
         responseDTO.setDate(dietEntity.getDate().toString());
-        responseDTO.setType(dietEntity.getType().name());
-        responseDTO.setWeek(dietEntity.getWeek().name());
+        responseDTO.setType(dietEntity.getType());
+        responseDTO.setWeek(dietEntity.getWeek());
         responseDTO.setMenus(dietEntity.getMenus().stream().map(menuEntity -> {
             MenuResponseDTO menuResponseDTO = new MenuResponseDTO();
             menuResponseDTO.setMenuId(menuEntity.getMenuId());

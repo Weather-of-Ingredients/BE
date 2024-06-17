@@ -38,7 +38,6 @@ public class RecommendationController {
     @Value("${openApi.cropEnd}")
     private String cropEnd;
 
-
     HttpURLConnection urlConnection = null;
     InputStream stream = null;
     String result = null;
