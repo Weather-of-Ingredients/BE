@@ -1,6 +1,9 @@
 package com.nutritionangel.woi.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nutritionangel.woi.dto.crops.CropItems;
 import com.nutritionangel.woi.dto.diet.MenuDTO;
+import com.nutritionangel.woi.dto.diet.MenuItem;
 import com.nutritionangel.woi.entity.DietEntity;
 import com.nutritionangel.woi.entity.MenuEntity;
 import com.nutritionangel.woi.repository.DietRepository;
@@ -37,6 +40,17 @@ public class MenuService {
     @Autowired
     public MenuService(MenuRepository menuRepository) {
         this.menuRepository = menuRepository;
+    }
+
+    public MenuItem parsingJson(String json){
+        MenuItem item = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            item = mapper.readValue(json, MenuItem.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return item;
     }
 
     public MenuDTO[] fetchAndSaveMenu(int dietId, String query) {

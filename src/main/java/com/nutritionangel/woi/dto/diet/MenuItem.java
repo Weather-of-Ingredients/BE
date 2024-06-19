@@ -2,13 +2,18 @@ package com.nutritionangel.woi.dto.diet;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
+@Entity
 @Embeddable
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MenuItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     @JsonProperty("DESC_KOR")
     private String foodName;
 
