@@ -200,7 +200,7 @@ public ResponseEntity<?> processSignup(@RequestBody @Valid UserRegisterDTO userR
         }
 
         // 로그인 성공 => Jwt Token 발급
-        long expiredTimeMs = 1000 * 60 * 60 * 24L;  // 1일, 24시간
+        long expiredTimeMs = 1000 * 60 * 60 * 24 * 7L; // 7일
         String jwtToken = jwtUtil.createJwt(user.getLoginId(), user.getRole(), expiredTimeMs);
 
         Map<String, String> response = new HashMap<>();
