@@ -164,4 +164,8 @@ public class DietService {
         menuResponseDTO.setCalories(menuEntity.getCalories());
         return menuResponseDTO;
     }
+
+    public DietResponseDTO callToResponseDTO(DietEntity dietEntity) {
+        return convertToResponseDTO(dietEntity);
+    }
 }
