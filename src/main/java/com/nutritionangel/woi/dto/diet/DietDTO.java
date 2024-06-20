@@ -18,5 +18,5 @@ public class DietDTO {
     private String week;
     @Builder.Default
     private List<MenuDTO> menus = new ArrayList<>();
-    private Integer userId; // 사용자 ID 추가
+    private UserEntity userEntity;
 }

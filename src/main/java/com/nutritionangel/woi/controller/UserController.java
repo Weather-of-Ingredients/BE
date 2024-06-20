@@ -66,6 +66,7 @@ public class UserController {
             return ResponseEntity.status(401).build();
         }
         UserInfoResponseDTO userInfoResponse = new UserInfoResponseDTO();
+        userInfoResponse.setUid(userEntity.getUserId());
         userInfoResponse.setName(userEntity.getName());
         userInfoResponse.setEmail(userEntity.getEmail());
         userInfoResponse.setSchool(userEntity.getSchool());
