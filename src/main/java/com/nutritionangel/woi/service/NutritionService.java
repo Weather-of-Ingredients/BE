@@ -39,6 +39,7 @@ public class NutritionService {
         return dietResponseDTOList;
     }
     public double getCarbohydrate(int year, int month) {
+        getCarbohydrate = 0;
         List<DietResponseDTO> dietResponseDTOList = getDietResponseDTO(year, month);
 
         for(DietResponseDTO dietResponseDTO : dietResponseDTOList){
@@ -51,6 +52,7 @@ public class NutritionService {
     }
 
     public double getProtein(int year, int month) {
+        getProtein = 0;
         List<DietResponseDTO> dietResponseDTOList = getDietResponseDTO(year, month);
 
         for(DietResponseDTO dietResponseDTO : dietResponseDTOList){
@@ -64,6 +66,7 @@ public class NutritionService {
     }
 
     public double getFat(int year, int month) {
+        getFat =0;
         List<DietResponseDTO> dietResponseDTOList = getDietResponseDTO(year, month);
 
         for(DietResponseDTO dietResponseDTO : dietResponseDTOList){
