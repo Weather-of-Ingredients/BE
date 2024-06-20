@@ -77,13 +77,7 @@ public class DietController {
         return ResponseEntity.ok(dietList);
     }
 
-    @GetMapping("/diet/my")
-    public ResponseEntity<List<DietDTO>> getMyDietList(@PathVariable UserDetails userDetails){
-        List<DietDTO> dietList = dietService.getDietsByUserId(userDetails);
-        return ResponseEntity.ok(dietList);
-    }
-
-    @GetMapping("/user/diet")
+    @GetMapping("/user/diet") // 사용자별 식단 목록 조회
     public List<DietDTO> getUserDiets(@AuthenticationPrincipal UserDetails userDetails) {
         return dietService.getDietsByUserId(userDetails);
     }
