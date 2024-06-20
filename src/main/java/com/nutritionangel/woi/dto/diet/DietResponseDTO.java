@@ -1,5 +1,7 @@
 package com.nutritionangel.woi.dto.diet;
 
+import com.nutritionangel.woi.dto.user.UserInfoResponseDTO;
+
 import java.util.List;
 
 public class DietResponseDTO {
@@ -8,6 +10,16 @@ public class DietResponseDTO {
     private String type;
     private String week;
     private List<MenuResponseDTO> menus;
+
+    private UserInfoResponseDTO user;  // 사용자 정보 추가
+
+    public UserInfoResponseDTO getUser() {  // 사용자 정보를 가져오는 메소드
+        return user;
+    }
+
+    public void setUser(UserInfoResponseDTO user) {  // 사용자 정보를 설정하는 메소드
+        this.user = user;
+    }
 
     public String getDate() {
         return date;
@@ -48,4 +60,5 @@ public class DietResponseDTO {
     public void setMenus(List<MenuResponseDTO> menus) {
         this.menus = menus;
     }
+
 }

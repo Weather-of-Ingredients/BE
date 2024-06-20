@@ -3,6 +3,7 @@ package com.nutritionangel.woi.controller;
 import com.nutritionangel.woi.dto.diet.DietDTO;
 import com.nutritionangel.woi.dto.diet.DietResponseDTO;
 import com.nutritionangel.woi.dto.diet.MenuResponseDTO;
+import com.nutritionangel.woi.entity.UserEntity;
 import com.nutritionangel.woi.service.DietService;
 import com.nutritionangel.woi.service.MenuService;
 import com.nutritionangel.woi.service.S3UploadService;
@@ -10,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,6 +74,16 @@ public class DietController {
         return ResponseEntity.ok(dietList);
     }
 
+    @GetMapping("/diet/my")
+    public ResponseEntity<List<DietDTO>> getMyDietList(@PathVariable UserDetails userDetails){
+        List<DietDTO> dietList = dietService.getDietsByUserId(userDetails);
+        return ResponseEntity.ok(dietList);
+    }
+
+    @GetMapping("/user/diet")
+    public List<DietDTO> getUserDiets(@AuthenticationPrincipal UserDetails userDetails) {
+        return dietService.getDietsByUserId(userDetails);
+    }
 
     @GetMapping("/diet/{date}") // 일자별 식단 목록 조회
     public ResponseEntity<List<DietDTO>> getDietByDate(@PathVariable String date) {
@@ -147,5 +161,4 @@ public class DietController {
 
         return result.toString();
     }
-
 }

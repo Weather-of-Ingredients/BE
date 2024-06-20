@@ -1,13 +1,17 @@
 package com.nutritionangel.woi.service;
 
 import com.nutritionangel.woi.dto.diet.*;
+import com.nutritionangel.woi.dto.user.UserInfoResponseDTO;
 import com.nutritionangel.woi.entity.DietEntity;
 import com.nutritionangel.woi.entity.MenuEntity;
+import com.nutritionangel.woi.entity.UserEntity;
 import com.nutritionangel.woi.enums.DietType;
 import com.nutritionangel.woi.enums.Weeks;
 import com.nutritionangel.woi.repository.DietRepository;
 import com.nutritionangel.woi.repository.MenuRepository;
+import com.nutritionangel.woi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +25,13 @@ public class DietService {
 
     private final DietRepository dietRepository;
     private final MenuRepository menuRepository;
+    private final UserRepository userRepository;  // UserRepository 추가
 
     @Autowired
-    public DietService(DietRepository dietRepository, MenuRepository menuRepository) {
+    public DietService(DietRepository dietRepository, MenuRepository menuRepository, UserRepository userRepository) {
         this.dietRepository = dietRepository;
         this.menuRepository = menuRepository;
+        this.userRepository = userRepository;
     }
 
     public List<DietDTO> getAllDiets() {
@@ -38,12 +44,23 @@ public class DietService {
         return dietEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public List<DietDTO> getDietsByUserId(UserDetails userEntity) {
+        UserEntity user = userRepository.findByName(userEntity.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<DietEntity> dietEntities = dietRepository.findByUserUserId(user.getUserId());
+        return dietEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
     @Transactional
     public DietResponseDTO createDiet(DietDTO dietDTO) {
+        UserEntity userEntity = userRepository.findById(dietDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         DietEntity dietEntity = DietEntity.builder()
                 .type(DietType.valueOf(dietDTO.getType()))
                 .week(Weeks.valueOf(dietDTO.getWeek()))
                 .date(LocalDate.parse(dietDTO.getDate()))
+                .user(userEntity)  // 사용자 정보 설정
                 .build();
 
         List<MenuEntity> menuEntities = dietDTO.getMenus().stream().map(menuDTO -> {
@@ -75,6 +92,10 @@ public class DietService {
         existingDiet.setType(DietType.valueOf(dietDTO.getType()));
         existingDiet.setWeek(Weeks.valueOf(dietDTO.getWeek()));
         existingDiet.setDate(LocalDate.parse(dietDTO.getDate()));
+
+        UserEntity userEntity = userRepository.findById(dietDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        existingDiet.setUser(userEntity);  // 사용자 정보 설정
 
         List<MenuEntity> existingMenus = existingDiet.getMenus();
         List<MenuDTO> newMenuDTOs = dietDTO.getMenus();
@@ -128,6 +149,7 @@ public class DietService {
         dietDTO.setType(dietEntity.getType().name());
         dietDTO.setWeek(dietEntity.getWeek().name());
         dietDTO.setMenus(dietEntity.getMenus().stream().map(this::convertToMenuDTO).collect(Collectors.toList()));
+        dietDTO.setUserId(dietEntity.getUser().getUserId());  // 사용자 ID 설정
         return dietDTO;
     }
 
@@ -150,6 +172,12 @@ public class DietService {
         responseDTO.setType(dietEntity.getType().name());
         responseDTO.setWeek(dietEntity.getWeek().name());
         responseDTO.setMenus(dietEntity.getMenus().stream().map(this::convertToMenuResponseDTO).collect(Collectors.toList()));
+
+        UserInfoResponseDTO userResponseDTO = new UserInfoResponseDTO();
+        userResponseDTO.setUid(dietEntity.getUser().getUserId());
+        userResponseDTO.setName(dietEntity.getUser().getName());
+        responseDTO.setUser(userResponseDTO);  // 사용자 정보 설정
+
         return responseDTO;
     }
 
