@@ -5,10 +5,14 @@ import com.nutritionangel.woi.dto.user.UserRegisterDTO;
 import com.nutritionangel.woi.entity.UserEntity;
 import com.nutritionangel.woi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -90,5 +94,30 @@ public class UserServiceImpl implements UserService {
     public void logout(String loginId) {
         Optional<UserEntity> optionalUser = userRepository.findByLoginId(loginId);
         optionalUser.ifPresent(userRepository::delete);
+    }
+
+//    @Override
+//    public UserEntity loadUserByUsername(String loginId) throws UsernameNotFoundException {
+//        UserEntity userEntity = userRepository.findByLoginId(loginId)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found with loginId: " + loginId));
+//
+//        return new UserEntity(userEntity.getLoginId(), userEntity.getPassword(), Collections.emptyList());
+//    }
+
+    @Override
+    public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with loginId: " + loginId));
+
+        return new org.springframework.security.core.userdetails.User(
+                userEntity.getLoginId(),
+                userEntity.getPassword(),
+                Collections.emptyList()
+        );
+    }
+
+    public UserEntity getUserByLoginId(String loginId) {
+        return userRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with loginId: " + loginId));
     }
 }

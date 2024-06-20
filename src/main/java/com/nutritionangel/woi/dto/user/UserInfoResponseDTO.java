@@ -8,10 +8,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class UserInfoResponseDTO {
+
     private Integer uid;
+
     private String name;
     private String email;
 
     private String school;
 
-}

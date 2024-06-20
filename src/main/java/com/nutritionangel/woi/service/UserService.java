@@ -1,10 +1,10 @@
 package com.nutritionangel.woi.service;
 
 import com.nutritionangel.woi.dto.user.LoginRequestDTO;
-import com.nutritionangel.woi.dto.user.UserLoginDTO;
 import com.nutritionangel.woi.dto.user.UserRegisterDTO;
 import com.nutritionangel.woi.entity.UserEntity;
-import com.nutritionangel.woi.projection.user.GetUser;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UserService {
 
@@ -22,6 +22,10 @@ public interface UserService {
 
     public void logout(String loginId);
 
+//    UserEntity loadUserByUsername(String loginId);
+    UserDetails loadUserByUsername(String loginId);
+    UserEntity getUserByLoginId(String loginId);
+    //UserEntity loadUserByUsernam e(String loginId);
 }
 
 
