@@ -1,13 +1,18 @@
 package com.nutritionangel.woi.service;
 
 import com.nutritionangel.woi.dto.diet.*;
+import com.nutritionangel.woi.dto.user.UserInfoResponseDTO;
 import com.nutritionangel.woi.entity.DietEntity;
 import com.nutritionangel.woi.entity.MenuEntity;
+import com.nutritionangel.woi.entity.UserEntity;
 import com.nutritionangel.woi.enums.DietType;
 import com.nutritionangel.woi.enums.Weeks;
 import com.nutritionangel.woi.repository.DietRepository;
 import com.nutritionangel.woi.repository.MenuRepository;
+import com.nutritionangel.woi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +26,13 @@ public class DietService {
 
     private final DietRepository dietRepository;
     private final MenuRepository menuRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public DietService(DietRepository dietRepository, MenuRepository menuRepository) {
+    public DietService(DietRepository dietRepository, MenuRepository menuRepository, UserRepository userRepository) {
         this.dietRepository = dietRepository;
         this.menuRepository = menuRepository;
+        this.userRepository = userRepository;
     }
 
     public List<DietDTO> getAllDiets() {
@@ -38,12 +45,24 @@ public class DietService {
         return dietEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public List<DietDTO> getDietsByUserId(@AuthenticationPrincipal UserDetails userDetails) {
+        UserEntity userEntity = userRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<DietEntity> dietEntities = dietRepository.findByUserUserId(userEntity.getUserId());
+        return dietEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
     @Transactional
-    public DietResponseDTO createDiet(DietDTO dietDTO) {
+    public DietResponseDTO createDiet(DietDTO dietDTO, @AuthenticationPrincipal UserDetails userDetails) {
+        UserEntity userEntity = userRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         DietEntity dietEntity = DietEntity.builder()
                 .type(DietType.valueOf(dietDTO.getType()))
                 .week(Weeks.valueOf(dietDTO.getWeek()))
                 .date(LocalDate.parse(dietDTO.getDate()))
+                .user(userEntity)
                 .build();
 
         List<MenuEntity> menuEntities = dietDTO.getMenus().stream().map(menuDTO -> {
@@ -68,13 +87,17 @@ public class DietService {
     }
 
     @Transactional
-    public DietResponseDTO updateDiet(int dietId, DietDTO dietDTO) {
+    public DietResponseDTO updateDiet(int dietId, DietDTO dietDTO, @AuthenticationPrincipal  UserDetails userDetails) {
         DietEntity existingDiet = dietRepository.findById(dietId)
                 .orElseThrow(() -> new RuntimeException("Diet not found"));
 
         existingDiet.setType(DietType.valueOf(dietDTO.getType()));
         existingDiet.setWeek(Weeks.valueOf(dietDTO.getWeek()));
         existingDiet.setDate(LocalDate.parse(dietDTO.getDate()));
+
+        UserEntity user = userRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        existingDiet.setUser(user);
 
         List<MenuEntity> existingMenus = existingDiet.getMenus();
         List<MenuDTO> newMenuDTOs = dietDTO.getMenus();
@@ -128,6 +151,7 @@ public class DietService {
         dietDTO.setType(dietEntity.getType().name());
         dietDTO.setWeek(dietEntity.getWeek().name());
         dietDTO.setMenus(dietEntity.getMenus().stream().map(this::convertToMenuDTO).collect(Collectors.toList()));
+        dietDTO.setUserEntity(dietEntity.getUser());
         return dietDTO;
     }
 
@@ -150,6 +174,14 @@ public class DietService {
         responseDTO.setType(dietEntity.getType().name());
         responseDTO.setWeek(dietEntity.getWeek().name());
         responseDTO.setMenus(dietEntity.getMenus().stream().map(this::convertToMenuResponseDTO).collect(Collectors.toList()));
+
+        UserInfoResponseDTO userInfoResponse = new UserInfoResponseDTO();
+        userInfoResponse.setUid(dietEntity.getUser().getUserId());
+        userInfoResponse.setName(dietEntity.getUser().getName());
+        userInfoResponse.setEmail(dietEntity.getUser().getEmail());
+        userInfoResponse.setSchool(dietEntity.getUser().getSchool());
+        responseDTO.setUser(userInfoResponse);  // 사용자 정보 설정
+
         return responseDTO;
     }
 

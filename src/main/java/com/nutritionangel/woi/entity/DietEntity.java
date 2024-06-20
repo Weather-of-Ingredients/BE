@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,4 +40,8 @@ public class DietEntity {
     @Builder.Default
     @OneToMany(mappedBy = "diet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MenuEntity> menus = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 }

@@ -1,6 +1,9 @@
 package com.nutritionangel.woi.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nutritionangel.woi.dto.crops.CropItems;
 import com.nutritionangel.woi.dto.diet.MenuDTO;
+import com.nutritionangel.woi.dto.diet.MenuItem;
 import com.nutritionangel.woi.entity.DietEntity;
 import com.nutritionangel.woi.entity.MenuEntity;
 import com.nutritionangel.woi.repository.DietRepository;
@@ -28,10 +31,10 @@ public class MenuService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${openApi.serviceKey}")
+    @Value("${openApi.MserviceKey}")
     private String serviceKey;
 
-    @Value("${openApi.callBackUrl}")
+    @Value("${openApi.McallBackUrl}")
     private String callBackUrl;
 
     @Autowired
@@ -39,9 +42,15 @@ public class MenuService {
         this.menuRepository = menuRepository;
     }
 
-    public MenuEntity getMenuById(int menuId) {
-        return menuRepository.findById(menuId)
-                .orElseThrow(() -> new RuntimeException("Menu not found"));
+    public MenuItem parsingJson(String json){
+        MenuItem item = null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            item = mapper.readValue(json, MenuItem.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return item;
     }
 
     public MenuDTO[] fetchAndSaveMenu(int dietId, String query) {
@@ -76,23 +85,4 @@ public class MenuService {
         }
         return menuDTOs;
     }
-
-//    public List<MenuDTO> searchMenu(String query){
-//        // API URL 정의
-//        String urlStr = callBackUrl +
-//                serviceKey +
-//                "/I2790/json/1/5" +
-//                "/DESC_KOR=" + query;
-//        String apiUrl = urlStr;
-//
-//        ResponseEntity<MenuDTO[]> response = restTemplate.getForEntity(apiUrl, MenuDTO[].class);
-//        MenuDTO[] menuArray = response.getBody();
-//
-//        if (menuArray != null){
-//            return Arrays.asList(menuArray);
-//        } else {
-//            return Collections.emptyList();
-//        }
-//    }
-
 }

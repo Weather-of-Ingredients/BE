@@ -3,6 +3,7 @@ package com.nutritionangel.woi.controller;
 import com.nutritionangel.woi.dto.diet.DietDTO;
 import com.nutritionangel.woi.dto.diet.DietResponseDTO;
 import com.nutritionangel.woi.dto.diet.MenuResponseDTO;
+import com.nutritionangel.woi.entity.UserEntity;
 import com.nutritionangel.woi.service.DietService;
 import com.nutritionangel.woi.service.MenuService;
 import com.nutritionangel.woi.service.S3UploadService;
@@ -10,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -72,6 +77,10 @@ public class DietController {
         return ResponseEntity.ok(dietList);
     }
 
+    @GetMapping("/user/diet") // 사용자별 식단 목록 조회
+    public List<DietDTO> getUserDiets(@AuthenticationPrincipal UserDetails userDetails) {
+        return dietService.getDietsByUserId(userDetails);
+    }
 
     @GetMapping("/diet/{date}") // 일자별 식단 목록 조회
     public ResponseEntity<List<DietDTO>> getDietByDate(@PathVariable String date) {
@@ -81,13 +90,18 @@ public class DietController {
 
     @PostMapping("/diet") // 식단 작성
     public ResponseEntity<DietResponseDTO> createDiet(@RequestBody DietDTO dietDTO) {
-        DietResponseDTO dietResponseDTO = dietService.createDiet(dietDTO);
+        // 현재 사용자의 UserDetails를 가져옴
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        DietResponseDTO dietResponseDTO = dietService.createDiet(dietDTO, userDetails);
         return ResponseEntity.ok(dietResponseDTO);
     }
 
     @PutMapping("/diet/update/{dietId}")
     public ResponseEntity<DietResponseDTO> updateDiet(@PathVariable int dietId, @RequestBody DietDTO dietDTO) {
-        DietResponseDTO updatedDiet = dietService.updateDiet(dietId, dietDTO);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        DietResponseDTO updatedDiet = dietService.updateDiet(dietId, dietDTO, userDetails);
         DietResponseDTO dietResponseDTO = convertToResponseDTO(updatedDiet);
         return ResponseEntity.ok(dietResponseDTO);
     }
@@ -149,5 +163,4 @@ public class DietController {
 
         return result.toString();
     }
-
 }

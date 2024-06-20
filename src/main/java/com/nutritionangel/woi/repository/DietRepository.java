@@ -2,6 +2,7 @@ package com.nutritionangel.woi.repository;
 
 import com.nutritionangel.woi.entity.DietEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,7 @@ public interface DietRepository extends JpaRepository<DietEntity, Integer> {
 
     @Query(value = "SELECT * FROM diet WHERE YEAR(date) = :year AND MONTH(date) = :month", nativeQuery = true)
     List<DietEntity> findByYearAndMonth(@Param("year")int year, @Param("month") int month);
+
+    List<DietEntity> findByUserUserId(Integer userId); // 사용자 ID로 식단 검색
+
 }
