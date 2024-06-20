@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -95,13 +96,18 @@ public class DietController {
 
     @PostMapping("/diet") // 식단 작성
     public ResponseEntity<DietResponseDTO> createDiet(@RequestBody DietDTO dietDTO) {
-        DietResponseDTO dietResponseDTO = dietService.createDiet(dietDTO);
+        // 현재 사용자의 UserDetails를 가져옴
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        DietResponseDTO dietResponseDTO = dietService.createDiet(dietDTO, userDetails);
         return ResponseEntity.ok(dietResponseDTO);
     }
 
     @PutMapping("/diet/update/{dietId}")
     public ResponseEntity<DietResponseDTO> updateDiet(@PathVariable int dietId, @RequestBody DietDTO dietDTO) {
-        DietResponseDTO updatedDiet = dietService.updateDiet(dietId, dietDTO);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        DietResponseDTO updatedDiet = dietService.updateDiet(dietId, dietDTO, userDetails);
         DietResponseDTO dietResponseDTO = convertToResponseDTO(updatedDiet);
         return ResponseEntity.ok(dietResponseDTO);
     }

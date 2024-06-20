@@ -41,9 +41,8 @@ public class SecurityConfig {
                 .cors((auth) -> auth.disable())
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/api/**", "/api/user/login/**", "/api/user/register/**", "/login/oauth2/**").permitAll()
+                                .requestMatchers("/api", "/api/user/login/**", "/api/user/register/**", "/login/oauth2/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole(UserRole.ADMIN.name())
-                                .requestMatchers("api/getNut/**").permitAll() // 임시 코드 (인증 문제 해결 후 지울 것)
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
