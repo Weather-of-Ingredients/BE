@@ -121,7 +121,6 @@ public class DietController {
         responseDTO.setMenus(dietEntity.getMenus().stream().map(menuEntity -> {
             MenuResponseDTO menuResponseDTO = new MenuResponseDTO();
             menuResponseDTO.setMenuId(menuEntity.getMenuId());
-            menuResponseDTO.setIngredients(menuEntity.getIngredients());
             menuResponseDTO.setCarbohydrate(menuEntity.getCarbohydrate());
             menuResponseDTO.setProtein(menuEntity.getProtein());
             menuResponseDTO.setFat(menuEntity.getFat());
