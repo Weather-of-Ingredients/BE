@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -77,16 +79,17 @@ public class RecommendationController {
     }
 
     //OpenApi 연결
-    @GetMapping("")
-    public List<CropItem> callApi() throws IOException {
+    @GetMapping("/{name}")
+    public List<CropItem> callApi(@PathVariable("name") String name) throws IOException {
 
         String urlStr = callBackUrl +
                 serviceKey + "/" +
                 dataType + "/" +
                 ApiUrl + "/" +
                 cropStart + "/" +
-                cropEnd;
+                cropEnd + "?PRDLST_NM=" + URLEncoder.encode(name, StandardCharsets.UTF_8.toString());
 
+        System.out.println(urlStr);
 
         try{
             URL url = new URL(urlStr);
