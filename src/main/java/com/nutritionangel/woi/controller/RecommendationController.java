@@ -89,7 +89,6 @@ public class RecommendationController {
                 cropStart + "/" +
                 cropEnd + "?PRDLST_NM=" + URLEncoder.encode(name, StandardCharsets.UTF_8.toString());
 
-        System.out.println(urlStr);
 
         try{
             URL url = new URL(urlStr);
