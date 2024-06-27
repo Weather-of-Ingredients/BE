@@ -10,7 +10,6 @@ import lombok.*;
 public class MenuDTO {
     @Getter
     private Integer menuId;
-    private String ingredients;
     private double carbohydrate;
     private double protein;
     private double fat;

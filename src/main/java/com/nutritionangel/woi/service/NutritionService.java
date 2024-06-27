@@ -1,17 +1,17 @@
 package com.nutritionangel.woi.service;
 
-import com.nutritionangel.woi.dto.diet.DietDTO;
 import com.nutritionangel.woi.dto.diet.DietResponseDTO;
 import com.nutritionangel.woi.dto.diet.MenuResponseDTO;
 import com.nutritionangel.woi.entity.DietEntity;
+import com.nutritionangel.woi.entity.UserEntity;
 import com.nutritionangel.woi.repository.DietRepository;
-import com.nutritionangel.woi.repository.MenuRepository;
+import com.nutritionangel.woi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class NutritionService {
@@ -22,14 +22,22 @@ public class NutritionService {
     @Autowired
     private DietService dietService;
 
-    private double getCarbohydrate, getProtein, getFat = 0;
+    @Autowired
+    private UserRepository userRepository;
 
-    public NutritionService(DietRepository dietRepository, DietService dietService) {
+    public NutritionService(DietRepository dietRepository, DietService dietService, UserRepository userRepository) {
         this.dietRepository = dietRepository;
         this.dietService = dietService;
+        this.userRepository = userRepository;
     }
-    private List<DietResponseDTO> getDietResponseDTO(int year, int month){
-        List<DietEntity> dietEntityList = dietRepository.findByYearAndMonth(year, month);
+
+    private List<DietResponseDTO> getDietResponseDTO(UserDetails userDetails, int year, int month){
+
+        UserEntity userEntity = userRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<DietEntity> dietEntityList = dietRepository.findByYearAndMonthWithUser(userEntity.getUserId(), year, month);
+
+
         List<DietResponseDTO> dietResponseDTOList = new ArrayList<>();
 
         for(DietEntity dietEntity : dietEntityList){
@@ -38,9 +46,9 @@ public class NutritionService {
 
         return dietResponseDTOList;
     }
-    public double getCarbohydrate(int year, int month) {
-        getCarbohydrate = 0;
-        List<DietResponseDTO> dietResponseDTOList = getDietResponseDTO(year, month);
+    public double getCarbohydrate(UserDetails userDetails, int year, int month) {
+        double getCarbohydrate = 0;
+        List<DietResponseDTO> dietResponseDTOList = getDietResponseDTO(userDetails, year, month);
 
         for(DietResponseDTO dietResponseDTO : dietResponseDTOList){
             List<MenuResponseDTO> menuResponseDTOList = dietResponseDTO.getMenus();
@@ -51,9 +59,9 @@ public class NutritionService {
         return getCarbohydrate;
     }
 
-    public double getProtein(int year, int month) {
-        getProtein = 0;
-        List<DietResponseDTO> dietResponseDTOList = getDietResponseDTO(year, month);
+    public double getProtein(UserDetails userDetails, int year, int month) {
+        double getProtein = 0;
+        List<DietResponseDTO> dietResponseDTOList = getDietResponseDTO(userDetails, year, month);
 
         for(DietResponseDTO dietResponseDTO : dietResponseDTOList){
             List<MenuResponseDTO> menuResponseDTOList = dietResponseDTO.getMenus();
@@ -65,9 +73,9 @@ public class NutritionService {
         return getProtein;
     }
 
-    public double getFat(int year, int month) {
-        getFat =0;
-        List<DietResponseDTO> dietResponseDTOList = getDietResponseDTO(year, month);
+    public double getFat(UserDetails userDetails, int year, int month) {
+        double getFat =0;
+        List<DietResponseDTO> dietResponseDTOList = getDietResponseDTO(userDetails, year, month);
 
         for(DietResponseDTO dietResponseDTO : dietResponseDTOList){
             List<MenuResponseDTO> menuResponseDTOList = dietResponseDTO.getMenus();

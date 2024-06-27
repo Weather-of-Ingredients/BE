@@ -67,7 +67,7 @@ public class DietService {
 
         List<MenuEntity> menuEntities = dietDTO.getMenus().stream().map(menuDTO -> {
             MenuEntity menuEntity = MenuEntity.builder()
-                    .ingredients(menuDTO.getIngredients())
+
                     .carbohydrate(menuDTO.getCarbohydrate())
                     .protein(menuDTO.getProtein())
                     .fat(menuDTO.getFat())
@@ -111,7 +111,7 @@ public class DietService {
                     .findFirst()
                     .orElse(new MenuEntity());
 
-            menuEntity.setIngredients(newMenuDTO.getIngredients());
+            //menuEntity.setIngredients(newMenuDTO.getIngredients());
             menuEntity.setCarbohydrate(newMenuDTO.getCarbohydrate());
             menuEntity.setProtein(newMenuDTO.getProtein());
             menuEntity.setFat(newMenuDTO.getFat());
@@ -158,7 +158,7 @@ public class DietService {
     private MenuDTO convertToMenuDTO(MenuEntity menuEntity) {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setMenuId(menuEntity.getMenuId());
-        menuDTO.setIngredients(menuEntity.getIngredients());
+        //menuDTO.setIngredients(menuEntity.getIngredients());
         menuDTO.setCarbohydrate(menuEntity.getCarbohydrate());
         menuDTO.setProtein(menuEntity.getProtein());
         menuDTO.setFat(menuEntity.getFat());
@@ -188,7 +188,6 @@ public class DietService {
     private MenuResponseDTO convertToMenuResponseDTO(MenuEntity menuEntity) {
         MenuResponseDTO menuResponseDTO = new MenuResponseDTO();
         menuResponseDTO.setMenuId(menuEntity.getMenuId());
-        menuResponseDTO.setIngredients(menuEntity.getIngredients());
         menuResponseDTO.setCarbohydrate(menuEntity.getCarbohydrate());
         menuResponseDTO.setProtein(menuEntity.getProtein());
         menuResponseDTO.setFat(menuEntity.getFat());

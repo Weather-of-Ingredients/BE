@@ -23,7 +23,7 @@ public class MenuEntity {
     private Integer menuId;
 
 //    @Column(nullable = false)
-    private String ingredients;
+    //private String ingredients;
 
 //    @Column(nullable = false)
     private double carbohydrate;

@@ -2,7 +2,6 @@ package com.nutritionangel.woi.dto.diet;
 
 public class MenuResponseDTO {
     private Integer menuId;
-    private String ingredients;
     private double carbohydrate;
     private double protein;
     private double fat;
@@ -15,14 +14,6 @@ public class MenuResponseDTO {
 
     public void setMenuId(Integer menuId) {
         this.menuId = menuId;
-    }
-
-    public String getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(String ingredients) {
-        this.ingredients = ingredients;
     }
 
     public double getCarbohydrate() {

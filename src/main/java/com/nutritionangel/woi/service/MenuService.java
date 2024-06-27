@@ -72,7 +72,6 @@ public class MenuService {
         if (menuDTOs != null) {
             for (MenuDTO menuDTO : menuDTOs) {
                 MenuEntity menu = MenuEntity.builder()
-                        .ingredients(menuDTO.getIngredients())
                         .carbohydrate(menuDTO.getCarbohydrate())
                         .protein(menuDTO.getProtein())
                         .fat(menuDTO.getFat())
