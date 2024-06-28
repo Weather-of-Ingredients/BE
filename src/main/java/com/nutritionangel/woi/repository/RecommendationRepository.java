@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface RecommendationRepository extends JpaRepository<RecommendationEntity, Integer> {
-    Optional<RecommendationEntity> findByYearAndMonth(int year, int month);
+    List<RecommendationEntity> findByYearAndMonth(int year, int month);
 }

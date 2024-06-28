@@ -129,7 +129,6 @@ public class DietService {
                     .filter(m -> m.getMenuId().equals(newMenuDTO.getMenuId()))
                     .findFirst()
                     .orElse(new MenuEntity());
-
             menuEntity.setCarbohydrate(newMenuDTO.getCarbohydrate());
             menuEntity.setProtein(newMenuDTO.getProtein());
             menuEntity.setFat(newMenuDTO.getFat());

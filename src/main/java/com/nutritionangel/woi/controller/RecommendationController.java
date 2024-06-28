@@ -4,10 +4,13 @@ package com.nutritionangel.woi.controller;
 import com.nutritionangel.woi.dto.crops.CropItem;
 import com.nutritionangel.woi.dto.crops.CropItems;
 import com.nutritionangel.woi.dto.recommendation.RecommendationDTO;
+import com.nutritionangel.woi.dto.response.BadCropMenuDTO;
 import com.nutritionangel.woi.dto.response.CropResponseDTO;
 import com.nutritionangel.woi.service.RecommendationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -17,6 +20,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -67,9 +73,9 @@ public class RecommendationController {
     * 어려운 작물 가져오기
     * (기후예측 - 어려운 작물 Get)
     * */
-    @GetMapping("/{year}/{month}/{bad_crops}")
-    public CropResponseDTO badCrops(@PathVariable("year") int year, @PathVariable("month") int month, @PathVariable("bad_crops") String bad_crop){
-        List<CropItem> cropItems = recommendationService.badCropService(year, month, bad_crop);
+    @GetMapping("/{year}/{month}/{crop_type}")
+    public CropResponseDTO getCrops(@PathVariable("year") int year, @PathVariable("month") int month, @PathVariable("crop_type") String crop_type){
+        List<CropItem> cropItems = recommendationService.getCropService(year, month, crop_type);
         if(cropItems == null){
             return new CropResponseDTO(false, null);
         }
@@ -77,15 +83,15 @@ public class RecommendationController {
     }
 
     //OpenApi 연결
-    @GetMapping("")
-    public List<CropItem> callApi() throws IOException {
+    @GetMapping("/{name}")
+    public List<CropItem> callApi(@PathVariable("name") String name) throws IOException {
 
         String urlStr = callBackUrl +
                 serviceKey + "/" +
                 dataType + "/" +
                 ApiUrl + "/" +
                 cropStart + "/" +
-                cropEnd;
+                cropEnd + "?PRDLST_NM=" + URLEncoder.encode(name, StandardCharsets.UTF_8.toString());
 
 
         try{
@@ -121,6 +127,23 @@ public class RecommendationController {
         }
         return new CropResponseDTO(true, createRecommendationDTO);
 
+    }
+
+    @GetMapping("/{year}/{month}/menus")
+    private  List<BadCropMenuDTO> getBadCropsMenus(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("year") int year, @PathVariable("month") int month){
+        List<CropItem> badCropItems = recommendationService.getCropService(year, month, "bad_crop");
+        List<CropItem> altCropItems = recommendationService.getCropService(year, month, "alt_crop");
+
+        if(badCropItems == null && altCropItems == null){
+            return Collections.emptyList();
+        }
+        List<BadCropMenuDTO> badCropMenuDTOList = recommendationService.getBadCropsMenus(userDetails, year, month, badCropItems, altCropItems);
+
+        if(badCropMenuDTOList == null){
+            return Collections.emptyList();
+        }else{
+            return badCropMenuDTOList;
+        }
     }
 
     private InputStream getNetworkConnection(HttpURLConnection urlConnection) throws IOException{
