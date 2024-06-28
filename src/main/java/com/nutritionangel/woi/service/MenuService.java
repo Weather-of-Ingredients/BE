@@ -64,22 +64,6 @@ public class MenuService {
 
         return menuList;
     }
-        // MenuEntity로 변환하여 저장
-        if (menuDTOs != null) {
-            for (MenuDTO menuDTO : menuDTOs) {
-                MenuEntity menu = MenuEntity.builder()
-                        .carbohydrate(menuDTO.getCarbohydrate())
-                        .protein(menuDTO.getProtein())
-                        .fat(menuDTO.getFat())
-                        .foodName(menuDTO.getFoodName())
-                        .calories(menuDTO.getCalories())
-                        .diet(diet)
-                        .build();
-                menuRepository.save(menu);
-            }
-        }
-        return menuDTOs;
-    }
 
 //    public MenuItem parsingJson(String json){
 //        MenuItem item = null;
