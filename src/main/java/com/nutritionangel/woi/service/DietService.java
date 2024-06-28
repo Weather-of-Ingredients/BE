@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +34,11 @@ public class DietService {
         this.dietRepository = dietRepository;
         this.menuRepository = menuRepository;
         this.userRepository = userRepository;
+    }
+
+    public DietDTO getDietByDietId(Integer dietId){
+        DietEntity dietEntity = dietRepository.findByDietId(dietId);
+        return convertToDTO(dietEntity);
     }
 
     public List<DietDTO> getAllDiets() {
@@ -50,6 +56,20 @@ public class DietService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<DietEntity> dietEntities = dietRepository.findByUserUserId(userEntity.getUserId());
+        return dietEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    public List<DietDTO> getDietsByToday() {
+        LocalDate today = LocalDate.now();
+        List<DietEntity> dietEntities = dietRepository.findByDate(today);
+        return dietEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    public List<DietDTO> getDietByUserAndDate(@AuthenticationPrincipal UserDetails userDetails, LocalDate date) {
+        UserEntity userEntity = userRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<DietEntity> dietEntities = dietRepository.findByUserAndDate(userEntity, date);
         return dietEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 

@@ -6,6 +6,7 @@ import com.nutritionangel.woi.dto.diet.MenuDTO;
 import com.nutritionangel.woi.entity.MenuEntity;
 import com.nutritionangel.woi.repository.DietRepository;
 import com.nutritionangel.woi.repository.MenuRepository;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
