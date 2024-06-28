@@ -1,5 +1,5 @@
 package com.nutritionangel.woi.enums;
 
 public enum DietType {
-    Morning, Lunch, Dinner
+    조식, 중식, 석식
 }

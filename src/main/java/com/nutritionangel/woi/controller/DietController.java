@@ -25,7 +25,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -65,11 +68,11 @@ public class DietController {
         }
     }
 
-//    @GetMapping("/searchMenu")
-//    public ResponseEntity<List<MenuDTO>> searchMenu(@RequestParam String query) {
-//        List<MenuDTO> menuList = menuService.searchMenu(query);
-//        return ResponseEntity.ok(menuList);
-//    }
+    @GetMapping("/diet/today") // 오늘 날짜의 식단 목록 조회
+    public ResponseEntity<List<DietDTO>> getDietByToday() {
+        List<DietDTO> dietList = dietService.getDietsByToday();
+        return ResponseEntity.ok(dietList);
+    }
 
     @GetMapping("/diet/all") // 식단 목록 조회
     public ResponseEntity<List<DietDTO>> getDietList(){
@@ -85,6 +88,26 @@ public class DietController {
     @GetMapping("/diet/{date}") // 일자별 식단 목록 조회
     public ResponseEntity<List<DietDTO>> getDietByDate(@PathVariable String date) {
         List<DietDTO> dietList = dietService.getDietByDate(date);
+        return ResponseEntity.ok(dietList);
+    }
+
+    @GetMapping("/diet/get/{dietId}")
+    public ResponseEntity<DietDTO> getDietByDietId(@PathVariable Integer dietId){
+        DietDTO diet = dietService.getDietByDietId(dietId);
+        return ResponseEntity.ok(diet);
+    }
+
+    @GetMapping("/user/diet/{date}")
+    public ResponseEntity<List<DietDTO>> getDietByUserAndDate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        List<DietDTO> dietList = dietService.getDietByUserAndDate(userDetails, localDate);
+        return ResponseEntity.ok(dietList);
+    }
+
+    @GetMapping("/user/diet/today")
+    public ResponseEntity<List<DietDTO>> getDietByUserAndToday(@AuthenticationPrincipal UserDetails userDetails) {
+        LocalDate today = LocalDate.now();
+        List<DietDTO> dietList = dietService.getDietByUserAndDate(userDetails, today);
         return ResponseEntity.ok(dietList);
     }
 
@@ -121,7 +144,6 @@ public class DietController {
         responseDTO.setMenus(dietEntity.getMenus().stream().map(menuEntity -> {
             MenuResponseDTO menuResponseDTO = new MenuResponseDTO();
             menuResponseDTO.setMenuId(menuEntity.getMenuId());
-            //menuResponseDTO.setIngredients(menuEntity.getIngredients());
             menuResponseDTO.setCarbohydrate(menuEntity.getCarbohydrate());
             menuResponseDTO.setProtein(menuEntity.getProtein());
             menuResponseDTO.setFat(menuEntity.getFat());

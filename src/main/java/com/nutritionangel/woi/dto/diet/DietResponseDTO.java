@@ -60,5 +60,4 @@ public class DietResponseDTO {
     public void setMenus(List<MenuResponseDTO> menus) {
         this.menus = menus;
     }
-
 }

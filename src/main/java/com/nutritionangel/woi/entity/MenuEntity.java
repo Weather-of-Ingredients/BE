@@ -22,10 +22,6 @@ public class MenuEntity {
     @Column(name = "menu_id")
     private Integer menuId;
 
-//    @Column(nullable = false)
-    //private String ingredients;
-
-//    @Column(nullable = false)
     private double carbohydrate;
 
 //    @Column(nullable = false)

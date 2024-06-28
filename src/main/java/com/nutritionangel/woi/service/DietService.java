@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +34,11 @@ public class DietService {
         this.dietRepository = dietRepository;
         this.menuRepository = menuRepository;
         this.userRepository = userRepository;
+    }
+
+    public DietDTO getDietByDietId(Integer dietId){
+        DietEntity dietEntity = dietRepository.findByDietId(dietId);
+        return convertToDTO(dietEntity);
     }
 
     public List<DietDTO> getAllDiets() {
@@ -53,6 +59,20 @@ public class DietService {
         return dietEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public List<DietDTO> getDietsByToday() {
+        LocalDate today = LocalDate.now();
+        List<DietEntity> dietEntities = dietRepository.findByDate(today);
+        return dietEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    public List<DietDTO> getDietByUserAndDate(@AuthenticationPrincipal UserDetails userDetails, LocalDate date) {
+        UserEntity userEntity = userRepository.findByLoginId(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<DietEntity> dietEntities = dietRepository.findByUserAndDate(userEntity, date);
+        return dietEntities.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
     @Transactional
     public DietResponseDTO createDiet(DietDTO dietDTO, @AuthenticationPrincipal UserDetails userDetails) {
         UserEntity userEntity = userRepository.findByLoginId(userDetails.getUsername())
@@ -67,7 +87,6 @@ public class DietService {
 
         List<MenuEntity> menuEntities = dietDTO.getMenus().stream().map(menuDTO -> {
             MenuEntity menuEntity = MenuEntity.builder()
-
                     .carbohydrate(menuDTO.getCarbohydrate())
                     .protein(menuDTO.getProtein())
                     .fat(menuDTO.getFat())
@@ -110,8 +129,6 @@ public class DietService {
                     .filter(m -> m.getMenuId().equals(newMenuDTO.getMenuId()))
                     .findFirst()
                     .orElse(new MenuEntity());
-
-            //menuEntity.setIngredients(newMenuDTO.getIngredients());
             menuEntity.setCarbohydrate(newMenuDTO.getCarbohydrate());
             menuEntity.setProtein(newMenuDTO.getProtein());
             menuEntity.setFat(newMenuDTO.getFat());
@@ -158,7 +175,6 @@ public class DietService {
     private MenuDTO convertToMenuDTO(MenuEntity menuEntity) {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setMenuId(menuEntity.getMenuId());
-        //menuDTO.setIngredients(menuEntity.getIngredients());
         menuDTO.setCarbohydrate(menuEntity.getCarbohydrate());
         menuDTO.setProtein(menuEntity.getProtein());
         menuDTO.setFat(menuEntity.getFat());
